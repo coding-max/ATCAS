@@ -2,6 +2,8 @@
 """ console """
 
 import cmd
+import json
+import models
 from models.aircraft import Aircraft
 """from models.airport import Airport"""
 
@@ -23,8 +25,9 @@ class ATCAScmd(cmd.Cmd):
 		return True
 
 	def do_create(self, arg):
-		"creates a new class"
 		args = arg.split()
+		avion2 = Aircraft()
+		print(avion2.airline)
 		if len(args) == 0:
 			print("** No class selected **")
 			return False
@@ -32,22 +35,39 @@ class ATCAScmd(cmd.Cmd):
 			print("**wrong class**")
 			return False
 		if len(args) == 1:
-			print("**Created empty class, run update to set values**")
+			print("**missing: type, registration, ariline, country, ICAO**")
+			return False
 		if len(args) == 2:
-			print("**Created with ID**")
+			print("**missing: registration, ariline, country, ICAO**")
+			return False
 		if len(args) == 3:
-			print("**ID and type**")
+			print("**missing: ariline, country, ICAO**")
+			return False
 		if len(args) == 4:
-			print("**ID, type and registration**")
+			print("**missing: country, ICAO**")
+			return False
 		if len(args) == 5:
-			print("**ID, type, registration, ariline**")
+			print("**missing: ICAO**")
+			return False
 		if len(args) == 6:
-			print("**ID, type, registration, ariline, country**")
-		if len(args) == 7:
-			print("**ID, type, registration, ariline, country, ICAO**")
-	
-	def do_update(self):
-		self.update
+			avion1 = Aircraft(args)
+			avion1.aprint()
+			s = json.dumps(avion1.__dict__)
+			print(s)
+			out_file = open("myfile{:}.json".format(avion1.id), "a")
+			json.dump(s, out_file, indent = 6)
+			out_file.close()
+			ins_count = open("myfile.json".format(avion1.id), "w")
+			json.dump(avion1.id, ins_count, indent = 6)
+			ins_count.close()
+
+	def do_print(self, arg):
+		""" prints all flight information based on ID's given"""
+		args = arg.split()
+		if len(args) == 0:
+			print("missing ID")
+		if len(args) == 1:
+			print(models.storage.aircraft_query_id(args[1]))
 
 
 if __name__ == '__main__':
