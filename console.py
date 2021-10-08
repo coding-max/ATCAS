@@ -27,17 +27,12 @@ class ATCAScmd(cmd.Cmd):
 
 	def do_create(self, arg):
 		args = arg.split()
-		avion2 = Aircraft()
-		obj_list.append(avion2)
 		if len(args) == 0:
-			print("** No class selected **")
-			return False
-		if args[0] not in classes:
-			print("**wrong class**")
-			return False
-		if len(args) == 1:
-			print("**missing: type, registration, ariline, country, ICAO**")
-			return False
+			print("**Missing: id**")
+			return False	
+		avion = Aircraft(args[0])
+		obj_list.append(obj)
+		"""
 		if len(args) == 2:
 			print("**missing: registration, ariline, country, ICAO**")
 			return False
@@ -61,6 +56,7 @@ class ATCAScmd(cmd.Cmd):
 			ins_count = open("myfile.json".format(avion1.id), "w")
 			json.dump(avion1.id, ins_count, indent = 6)
 			ins_count.close()
+		"""
 
 	def do_print(self, arg):
 		""" prints all flight information based on ID's given"""
@@ -72,7 +68,29 @@ class ATCAScmd(cmd.Cmd):
 				print(obj.id)
 				if str(obj.id)  == str(args[0]):
 					print(obj)
+	def do_update(self, arg):
+		args = arg.split()
+		if len(args) == 0:
+			print("missing ID")
+		if len(args) == 1:
+			for obj in obj_list:
+				if str(obj.id)  == str(args[0]):
+					obj.update()
+					print(obj)
 
+	def do_collision(self, arg):
+		args = arg.split()
+		avion1 = avion2 = None
+		if len(args) <= 1:
+			print("missing ID´s")
+		if len(args) == 2:
+			for obj in obj_list:
+				if str(obj.id)  == str(args[0]):
+					avion1 = obj				
+				if str(obj.id)  == str(args[1]):
+					avion2 = obj
+			if avion1 and avion2:
+				avion1.collision(avion2)
 
 if __name__ == '__main__':
     ATCAScmd().cmdloop()

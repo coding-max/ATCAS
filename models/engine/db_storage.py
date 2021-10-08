@@ -11,6 +11,15 @@ class DBStorage:
 	def __init__(self):
 		"""instantiate a DBstorage object"""
 
+	def all_ids(self):
+		"""
+			returns a list of all flight id's
+		"""
+		id_dick = {
+			"ibe01",
+			"pluna89"
+		}
+
 	def aircraft_query_id(self, id=None):
 		"""
 			aircraft, flight status, departure and arrivals query
@@ -36,6 +45,24 @@ class DBStorage:
 			"departure_time": "ocho y cuarto",
 			"arrival_date": "ayer",
 			"arrival_time": "69"
+		}
+		return thisdict
+	
+	def aircraft_query_update(self, id=None):
+		"""
+			query of all updated values, returns a dictionary
+			with all the information
+		"""
+		thisdict = {
+			"latitud": "6969",
+			"longitud": "6969",
+			"truck": "6969",
+			"speed": "6969",
+			"vertical_speed": "6969",
+			"departure_date": "6969",
+			"departure_time": "6969",
+			"arrival_date": "6969",
+			"arrival_time": "6969"
 		}
 		return thisdict
 
