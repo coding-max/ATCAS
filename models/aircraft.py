@@ -17,7 +17,7 @@ class Aircraft(object):
 	def __init__(self, *args, **status):
 
 		aircraft_dict = models.storage.aircraft_query_id() #toaddid
-		self.id = aircraft_dict["id"]
+		self.id = str(Aircraft.instancecount) #aircraft_dict["id"]
 		self.type = aircraft_dict["type"]
 		self.registration = aircraft_dict["registration"]
 		self.airline = aircraft_dict["airline"]

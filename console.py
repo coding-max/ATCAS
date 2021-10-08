@@ -8,6 +8,7 @@ from models.aircraft import Aircraft
 """from models.airport import Airport"""
 
 classes = {"Aircraft": Aircraft}
+obj_list = []
 
 class ATCAScmd(cmd.Cmd):
 	prompt = '(^--|-->) '
@@ -27,7 +28,7 @@ class ATCAScmd(cmd.Cmd):
 	def do_create(self, arg):
 		args = arg.split()
 		avion2 = Aircraft()
-		print(avion2.airline)
+		obj_list.append(avion2)
 		if len(args) == 0:
 			print("** No class selected **")
 			return False
@@ -67,7 +68,10 @@ class ATCAScmd(cmd.Cmd):
 		if len(args) == 0:
 			print("missing ID")
 		if len(args) == 1:
-			print(models.storage.aircraft_query_id(args[1]))
+			for obj in obj_list:
+				print(obj.id)
+				if str(obj.id)  == str(args[0]):
+					print(obj)
 
 
 if __name__ == '__main__':
