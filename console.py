@@ -31,7 +31,7 @@ class ATCAScmd(cmd.Cmd):
 			print("**Missing: id**")
 			return False	
 		avion = Aircraft(args[0])
-		obj_list.append(obj)
+		obj_list.append(avion)
 		"""
 		if len(args) == 2:
 			print("**missing: registration, ariline, country, ICAO**")
@@ -65,9 +65,9 @@ class ATCAScmd(cmd.Cmd):
 			print("missing ID")
 		if len(args) == 1:
 			for obj in obj_list:
-				print(obj.id)
 				if str(obj.id)  == str(args[0]):
 					print(obj)
+
 	def do_update(self, arg):
 		args = arg.split()
 		if len(args) == 0:

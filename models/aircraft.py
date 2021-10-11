@@ -6,7 +6,7 @@ Contains class BaseModel
 import models
 import copy
 from weakref import WeakSet
-import numpy from np
+import numpy as np
 
 class Aircraft(object):
 	"Class model for all aircrafts"
@@ -17,7 +17,7 @@ class Aircraft(object):
 	def __init__(self, args):
 
 		aircraft_dict = models.storage.aircraft_query_id(args) #toaddid
-		self.id = str(Aircraft.instancecount) #aircraft_dict["id"]
+		self.id = str(args) #aircraft_dict["id"]
 		self.type = aircraft_dict["type"]
 		self.registration = aircraft_dict["registration"]
 		self.airline = aircraft_dict["airline"]
@@ -33,10 +33,13 @@ class Aircraft(object):
 		self.arrival_date = aircraft_dict["arrival_date"]
 		self.arrival_time = aircraft_dict["arrival_time"]
 
+		print(args)
+		self.flightpath = np.zeros((2,2))
+		self.flightpath[0, 0] = int(args)
+		self.flightpath[0, 1] = int(args)
+		self.flightpath[1, 0] = int(args)
+		self.flightpath[1, 1] = 5
 
-		self.coordiantesA = np.zeros((10,10,10))
-		self.coordiantesB = np.zeros((10,10,10))
-		
 		Aircraft.instancecount += 1
 		Aircraft.instances.add(self)
 
@@ -80,7 +83,25 @@ class Aircraft(object):
 
 	def collision(self, avion2):
 		"""detects a colision"""
-		self.update()
-		avion2.update()
-
-		print("explota, todo")
+		colision = np.intersect1d(self.flightpath, avion2.flightpath)
+		boolean_colision = np.in1d(self.flightpath, avion2.flightpath)
+		a = np.arange(self.flightpath.shape[0])[np.in1d(self.flightpath, avion2.flightpath)]
+		print("---------------------------------------")
+		print(a)
+		print("---------------------------------------")
+		print(boolean_colision)
+		print("---------------------------------------")
+		c = self.flightpath == avion2.flightpath
+		print(c)
+		print("---------------------------------------")
+		print(colision)
+		c[colision] = 1
+		print(c)
+		if colision.any():
+			print("colision time = ")
+			print(colision)
+			c = np.zeros(len(avion2.flightpath))
+			c[colision] = 1
+			print(np.nonzero(c))
+		else:
+			print("no colision")
