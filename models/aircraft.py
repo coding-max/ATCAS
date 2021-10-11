@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Contains class BaseModel
+Contains class Airacft
 """
 
 import models
@@ -33,12 +33,16 @@ class Aircraft(object):
 		self.arrival_date = aircraft_dict["arrival_date"]
 		self.arrival_time = aircraft_dict["arrival_time"]
 
-		print(args)
-		self.flightpath = np.zeros((2,2))
-		self.flightpath[0, 0] = int(args)
-		self.flightpath[0, 1] = int(args)
-		self.flightpath[1, 0] = int(args)
-		self.flightpath[1, 1] = 5
+		self.flightpath = np.zeros((2,2,2), dtype=float)
+		self.flightpath[0, 0, 0] = float(args)
+		self.flightpath[0, 0, 1] = float(args)
+		self.flightpath[0, 1, 0] = float(args)
+		self.flightpath[0, 1, 1] = float(args)
+		self.flightpath[1, 0, 0] = float(args)
+		self.flightpath[1, 0, 1] = float(args)
+		self.flightpath[1, 1, 0] = float(args)
+		self.flightpath[1, 1, 1] = 5.35
+
 
 		Aircraft.instancecount += 1
 		Aircraft.instances.add(self)
@@ -82,26 +86,25 @@ class Aircraft(object):
 		self.arrival_time = aircraft_dict["arrival_time"]
 
 	def collision(self, avion2):
-		"""detects a colision"""
-		colision = np.intersect1d(self.flightpath, avion2.flightpath)
-		boolean_colision = np.in1d(self.flightpath, avion2.flightpath)
-		a = np.arange(self.flightpath.shape[0])[np.in1d(self.flightpath, avion2.flightpath)]
-		print("---------------------------------------")
-		print(a)
-		print("---------------------------------------")
-		print(boolean_colision)
-		print("---------------------------------------")
-		c = self.flightpath == avion2.flightpath
-		print(c)
-		print("---------------------------------------")
-		print(colision)
-		c[colision] = 1
-		print(c)
-		if colision.any():
-			print("colision time = ")
-			print(colision)
-			c = np.zeros(len(avion2.flightpath))
-			c[colision] = 1
-			print(np.nonzero(c))
-		else:
-			print("no colision")
+		"""detects a colision between 2 aircrafts"""
+		for x in range(0, 2):
+			for y in range(0, 2):
+				for z in range(0, 2):
+					if self.flightpath[x, y, z] == avion2.flightpath[x, y, z]:
+						print("collision between {:} and {:}".format(self.id, avion2.id), end="")
+						print(" at {:}, on grid value [{:}, {:}]".format(self.flightpath[x, y, z], x, y, z))
+
+	def all_collision(obj_list):
+		"""checks collision between all aircrafts"""
+		pos = 0
+		for plane in obj_list:
+			pos+=1
+			for plane2 in obj_list[pos:]:
+				plane.collision(plane2)
+
+
+
+
+
+
+

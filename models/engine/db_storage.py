@@ -69,5 +69,41 @@ class DBStorage:
 	def airport_query(self):
 		"""
 			Returns a dictionary contaiinitn all information regarding
-			airports, with ids of all flights departuring and arriving
+			airports
         """
+		thisdict = {
+			"id": "MVD",
+			"ICAO": "SUMU",
+			"name": "Carrasco International Airport",
+			"city": "Montevideo",
+			"country": "Uruguay",
+		}
+		return thisdict
+
+	def airport_departures(self):
+		"""
+			returns a dictionary containing all flight departuring from selected airport
+		"""
+		thisdict = {
+			"5.35": "1",
+			"5.45": "2",
+			"5.55": "3",
+			"6.35": "4",
+			"6.45": "5",
+			"6.45": "6",
+		}
+		return thisdict
+
+	def airport_arrivals(self):
+		"""
+			returns a dictionary containing all flight arrivals from selected airport
+		"""
+		thisdict = {
+			"5.35": "7",
+			"5.45": "8",
+			"5.55": "9",
+			"6.35": "10",
+			"6.45": "11",
+			"6.45": "12",
+		}
+		return thisdict

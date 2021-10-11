@@ -4,11 +4,13 @@
 import cmd
 import json
 import models
+import pandas as pd
 from models.aircraft import Aircraft
-"""from models.airport import Airport"""
+from models.airport import Airport
 
 classes = {"Aircraft": Aircraft}
 obj_list = []
+aeropuerto = Airport(1)
 
 class ATCAScmd(cmd.Cmd):
 	prompt = '(^--|-->) '
@@ -32,33 +34,19 @@ class ATCAScmd(cmd.Cmd):
 			return False	
 		avion = Aircraft(args[0])
 		obj_list.append(avion)
-		"""
-		if len(args) == 2:
-			print("**missing: registration, ariline, country, ICAO**")
-			return False
-		if len(args) == 3:
-			print("**missing: ariline, country, ICAO**")
-			return False
-		if len(args) == 4:
-			print("**missing: country, ICAO**")
-			return False
-		if len(args) == 5:
-			print("**missing: ICAO**")
-			return False
-		if len(args) == 6:
-			avion1 = Aircraft(args)
-			avion1.aprint()
-			s = json.dumps(avion1.__dict__)
-			print(s)
-			out_file = open("myfile{:}.json".format(avion1.id), "a")
-			json.dump(s, out_file, indent = 6)
-			out_file.close()
-			ins_count = open("myfile.json".format(avion1.id), "w")
-			json.dump(avion1.id, ins_count, indent = 6)
-			ins_count.close()
-		"""
 
-	def do_print(self, arg):
+	def do_add(self, arg):
+		args = arg.split()
+		if len(args) == 0:
+			print("**Missing: id**")
+			return False
+		for obj in obj_list:
+			if str(obj.id)  == str(args[0]):
+				if aeropuerto.can_add(obj):
+					print("Adding plane to airspace...")
+					aeropuerto.add_plane(obj)
+
+	def do_planes(self, arg):
 		""" prints all flight information based on ID's given"""
 		args = arg.split()
 		if len(args) == 0:
@@ -67,6 +55,9 @@ class ATCAScmd(cmd.Cmd):
 			for obj in obj_list:
 				if str(obj.id)  == str(args[0]):
 					print(obj)
+
+	def do_airports(self, arg):
+		print(aeropuerto)
 
 	def do_update(self, arg):
 		args = arg.split()
@@ -91,6 +82,11 @@ class ATCAScmd(cmd.Cmd):
 					avion2 = obj
 			if avion1 and avion2:
 				avion1.collision(avion2)
+
+	def do_allcollisons(self, arg):
+		"""checks collisions between all aicrafts"""
+		Aircraft.all_collision(obj_list)
+
 
 if __name__ == '__main__':
     ATCAScmd().cmdloop()
