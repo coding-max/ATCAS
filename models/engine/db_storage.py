@@ -3,7 +3,7 @@
 Contains the class DBStorage
 """
 import models
-
+from math import cos
 
 class DBStorage:
 	"""class to interact with database"""
@@ -29,15 +29,10 @@ class DBStorage:
 			all fligths in the data base, with their repsective information
 			ex: ["id": 7439395, "type": 747-800, etc...]
 		"""
-		thisdict = {
-			"id": "21312",
-			"type": "747-800",
-			"registration": "Cuba",
-			"airline": "copailines",
-			"country": "uruguay",
-			"ICAO": "ICAO",
-			"latitud": "54.56",
-			"longitud": "58.69",
+		current_location = {
+			"latitud": int(54.56),
+			"longitud": int(58.69),
+			"altitude": int(44390),
 			"truck": "90",
 			"speed": "144",
 			"vertical_speed": "66",
@@ -45,6 +40,19 @@ class DBStorage:
 			"departure_time": "ocho y cuarto",
 			"arrival_date": "ayer",
 			"arrival_time": "69"
+		}
+		current_location["latitud"] = int(111320 * current_location["latitud"])
+		current_location["longitud"] = int(40075000 * cos(current_location["longitud"]) / 360)
+		current_location["altitude"] = int(0.3048 * current_location["altitude"])
+
+		thisdict = {
+			"id": "21312",
+			"type": "747-800",
+			"registration": "Cuba",
+			"airline": "copailines",
+			"country": "uruguay",
+			"current_location": current_location,
+			"ICAO": "ICAO"
 		}
 		return thisdict
 	
@@ -54,8 +62,9 @@ class DBStorage:
 			with all the information
 		"""
 		thisdict = {
-			"latitud": "6969",
-			"longitud": "6969",
+			"latitud": int(69.69),
+			"longitud": int(69.69),
+			"altitude": int(6969),
 			"truck": "6969",
 			"speed": "6969",
 			"vertical_speed": "6969",
@@ -64,7 +73,13 @@ class DBStorage:
 			"arrival_date": "6969",
 			"arrival_time": "6969"
 		}
-		return thisdict
+		lista_flightpath = [thisdict, thisdict, thisdict]
+		for element in lista_flightpath:
+			element["latitud"] = int(111320 * element["latitud"])
+			element["longitud"] = int(40075000 * cos(element["longitud"]) / 360)
+			element["altitude"] = int(0.3048 * element["altitude"])
+
+		return lista_flightpath
 
 	def airport_query(self):
 		"""

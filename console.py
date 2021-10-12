@@ -8,8 +8,6 @@ import pandas as pd
 from models.aircraft import Aircraft
 from models.airport import Airport
 
-classes = {"Aircraft": Aircraft}
-obj_list = []
 aeropuerto = Airport(1)
 
 class ATCAScmd(cmd.Cmd):
@@ -31,16 +29,16 @@ class ATCAScmd(cmd.Cmd):
 		args = arg.split()
 		if len(args) == 0:
 			print("**Missing: id**")
-			return False	
-		avion = Aircraft(args[0])
-		obj_list.append(avion)
+			return False
+		for pos in range(0, len(args)):
+			avion = Aircraft(args[pos])
 
 	def do_add(self, arg):
 		args = arg.split()
 		if len(args) == 0:
 			print("**Missing: id**")
 			return False
-		for obj in obj_list:
+		for obj in Aircraft.plane_list:
 			if str(obj.id)  == str(args[0]):
 				if aeropuerto.can_add(obj):
 					print("Adding plane to airspace...")
@@ -50,9 +48,10 @@ class ATCAScmd(cmd.Cmd):
 		""" prints all flight information based on ID's given"""
 		args = arg.split()
 		if len(args) == 0:
-			print("missing ID")
+			for obj in Aircraft.plane_list:
+				print(obj)
 		if len(args) == 1:
-			for obj in obj_list:
+			for obj in Aircraft.plane_list:
 				if str(obj.id)  == str(args[0]):
 					print(obj)
 
@@ -64,7 +63,7 @@ class ATCAScmd(cmd.Cmd):
 		if len(args) == 0:
 			print("missing ID")
 		if len(args) == 1:
-			for obj in obj_list:
+			for obj in Aircraft.plane_list:
 				if str(obj.id)  == str(args[0]):
 					obj.update()
 					print(obj)
@@ -75,18 +74,29 @@ class ATCAScmd(cmd.Cmd):
 		if len(args) <= 1:
 			print("missing ID´s")
 		if len(args) == 2:
-			for obj in obj_list:
+			for obj in Aircraft.plane_list:
 				if str(obj.id)  == str(args[0]):
 					avion1 = obj				
 				if str(obj.id)  == str(args[1]):
 					avion2 = obj
 			if avion1 and avion2:
-				avion1.collision(avion2)
+				collision_list = avion1.collision(avion2)
+			for elem in collision_list:
+				print("collision between {:} and {:}".format(elem["ID1"], elem["ID2"]), end="")
+				print(" at {:}, on {:} lat, {:} long, {:} alt".format(elem["crash_time"],
+																 	  elem["crash_latitude"],
+																  	  elem["crash_longitud"],
+																 	  elem["crash_altitude"]))
 
-	def do_allcollisons(self, arg):
+	def do_allcollisions(self, arg):
 		"""checks collisions between all aicrafts"""
-		Aircraft.all_collision(obj_list)
-
+		allcollision_list = Aircraft.all_collision(Aircraft.plane_list)
+		for elem in allcollision_list:
+			print("collision between {:} and {:}".format(elem["ID1"], elem["ID2"]), end="")
+			print(" at {:}, on {:} lat, {:} long, {:} alt".format(elem["crash_time"],
+																  elem["crash_latitude"],
+																  elem["crash_longitud"],
+																  elem["crash_altitude"]))
 
 if __name__ == '__main__':
     ATCAScmd().cmdloop()

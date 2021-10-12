@@ -5,17 +5,21 @@ Contains class Airacft
 
 import models
 import copy
-from weakref import WeakSet
 import numpy as np
+from math import sqrt
+from math import pow
 
 class Aircraft(object):
 	"Class model for all aircrafts"
 
-	instances = WeakSet()
 	instancecount = 0
+	plane_list = []
+	safety_vertical = 304.8
+	safety_horizontal = 4828.03
+	refresh_rate = 2
 
 	def __init__(self, args):
-
+		"""method to assign all variables when creating an instance of Aircraft"""
 		aircraft_dict = models.storage.aircraft_query_id(args) #toaddid
 		self.id = str(args) #aircraft_dict["id"]
 		self.type = aircraft_dict["type"]
@@ -23,44 +27,19 @@ class Aircraft(object):
 		self.airline = aircraft_dict["airline"]
 		self.country = aircraft_dict["country"]
 		self.ICAO = aircraft_dict["ICAO"]
-		self.latitud = aircraft_dict["latitud"]
-		self.longitud = aircraft_dict["longitud"]
-		self.truck = aircraft_dict["truck"]
-		self.speed = aircraft_dict["speed"]
-		self.vertical_speed = aircraft_dict["vertical_speed"]
-		self.departure_date = aircraft_dict["departure_date"]
-		self.departure_time = aircraft_dict["departure_time"]
-		self.arrival_date = aircraft_dict["arrival_date"]
-		self.arrival_time = aircraft_dict["arrival_time"]
 
-		self.flightpath = np.zeros((2,2,2), dtype=float)
-		self.flightpath[0, 0, 0] = float(args)
-		self.flightpath[0, 0, 1] = float(args)
-		self.flightpath[0, 1, 0] = float(args)
-		self.flightpath[0, 1, 1] = float(args)
-		self.flightpath[1, 0, 0] = float(args)
-		self.flightpath[1, 0, 1] = float(args)
-		self.flightpath[1, 1, 0] = float(args)
-		self.flightpath[1, 1, 1] = 5.35
+		self.path = models.storage.aircraft_query_update(args)
+		self.current_path = 0
+		self.collision_l = []
 
 
+		Aircraft.plane_list.append(self)
 		Aircraft.instancecount += 1
-		Aircraft.instances.add(self)
-
-	@classmethod
-	def get_instances(cls):
-		return list(Aircraft.instances)
 
 	def __str__(self):
-		"""String representation of the BaseModel class"""
+		"""String representation of the Aircraft class"""
 		return "[{:s}] ({:s}) {}".format(self.__class__.__name__, self.id,
 										 self.__dict__)
- 
-	def aprint(self):
-		print("id = {:}\ntype = {:}\nregistration = {:s}\nairline = {:s}\ncountry = {:s}\nICAO = {:s}\n".format(self.id, self.type, self.registration, self.airline, self.country, self.ICAO))
-
-	def save(self):
-		models.storage.save()
 
 	def to_dict(self):
 		"""returns a dictionary containing all keys/values of the instance"""
@@ -75,36 +54,46 @@ class Aircraft(object):
 	def update(self):
 		"""update all information of aircraft"""
 		aircraft_dict = models.storage.aircraft_query_update()
-		self.latitud = aircraft_dict["latitud"]
-		self.longitud = aircraft_dict["longitud"]
-		self.truck = aircraft_dict["truck"]
-		self.speed = aircraft_dict["speed"]
-		self.vertical_speed = aircraft_dict["vertical_speed"]
-		self.departure_date = aircraft_dict["departure_date"]
-		self.departure_time = aircraft_dict["departure_time"]
-		self.arrival_date = aircraft_dict["arrival_date"]
-		self.arrival_time = aircraft_dict["arrival_time"]
+		self.path = aircraft_dict
+		self.current_path += 1
 
 	def collision(self, avion2):
 		"""detects a colision between 2 aircrafts"""
-		for x in range(0, 2):
-			for y in range(0, 2):
-				for z in range(0, 2):
-					if self.flightpath[x, y, z] == avion2.flightpath[x, y, z]:
-						print("collision between {:} and {:}".format(self.id, avion2.id), end="")
-						print(" at {:}, on grid value [{:}, {:}]".format(self.flightpath[x, y, z], x, y, z))
+		pos = 0
+		collision_list = []
+		for element in self.path[self.current_path:]:
+			a = pow((element["latitud"] - avion2.path[(avion2.current_path) + pos]["latitud"]), 2)
+			b = pow((element["longitud"] - avion2.path[(avion2.current_path) + pos]["longitud"]), 2)
+			horizontal_distance = sqrt(a + b)
+			vertical_distance = (element["altitude"] - avion2.path[(avion2.current_path) + pos]["altitude"])
+			if (horizontal_distance < Aircraft.safety_horizontal) and (vertical_distance < Aircraft.safety_horizontal):
+				dic = {
+					"ID1": self.id,
+					"ID2": avion2.id,
+					"crash_time": element["departure_time"], #needs to change to current time
+					"crash_latitude": (element["latitud"] + (element["latitud"] - avion2.path[(avion2.current_path)  + pos]["latitud"]) / 2),
+					"crash_longitud": (element["longitud"] + (element["longitud"] - avion2.path[(avion2.current_path) + pos]["longitud"]) / 2),
+					"crash_altitude": (element["altitude"] + (element["altitude"] - avion2.path[(avion2.current_path) + pos]["altitude"]) / 2),
+					"crash_radious": horizontal_distance / 2
+				}
+				collision_list.append(dic)
+			pos += 1
+		self.collision_l = self.collision_l + collision_list
+		avion2.collision_l = avion2.collision_l + copy.deepcopy(collision_list)
+		return collision_list
 
 	def all_collision(obj_list):
 		"""checks collision between all aircrafts"""
 		pos = 0
+		total_collisions = []
+		print
 		for plane in obj_list:
 			pos+=1
 			for plane2 in obj_list[pos:]:
-				plane.collision(plane2)
+				total_collisions = total_collisions + plane.collision(plane2)
+		return total_collisions
 
 
-
-
-
-
-
+	def new_route(self):
+		"""Preliminar suggestion of deviating route based on altitude"""
+		descent_rate = 305 / Aircraft.refresh_rate
