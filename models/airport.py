@@ -5,13 +5,14 @@ Contains class Airacft
 
 import models
 import numpy as np
-
+import json
 
 class Airport():
+	with open("/home/ubuntu/atcas/ATCAS/test_flights/flights.json", 'r') as f:
+		airplane_list = dict(json.load(f))["planes"]
 	def __init__(self, args):
 
 		airport_dict = models.storage.airport_query()
-		self.airspace = np.zeros((2,2,2), dtype=dict)
 		self.id = airport_dict["id"]
 		self.ICAO = airport_dict["ICAO"]
 		self.name = airport_dict["name"]
@@ -20,10 +21,6 @@ class Airport():
 		self.arrivals = models.storage.airport_arrivals()
 		self.departure = models.storage.airport_departures()
 
-		for x in range(0, 2):
-			for y in range(0, 2):
-				for z in range(0, 2):
-					self.airspace[x, y, z] = {}
 
 	def __str__(self):
 		"""String representation of the BaseModel class"""
@@ -59,4 +56,3 @@ class Airport():
 						"""print("Collision; time: {:}, place: [{:}, {:}, {:}], with: {:}".format(avion.flightpath[x, y, z], x, y, z, ), self.airspace[x, y, z][avion.flightpath[x, y, z]])"""
 						add = False
 		return add
-		

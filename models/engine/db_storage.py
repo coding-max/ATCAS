@@ -4,6 +4,7 @@ Contains the class DBStorage
 """
 import models
 from math import cos
+import json
 
 class DBStorage:
 	"""class to interact with database"""
@@ -30,20 +31,7 @@ class DBStorage:
 			ex: ["id": 7439395, "type": 747-800, etc...]
 		"""
 		current_location = {
-			"latitud": int(54.56),
-			"longitud": int(58.69),
-			"altitude": int(44390),
-			"truck": "90",
-			"speed": "144",
-			"vertical_speed": "66",
-			"departure_date": "hoy",
-			"departure_time": "ocho y cuarto",
-			"arrival_date": "ayer",
-			"arrival_time": "69"
 		}
-		current_location["latitud"] = int(111320 * current_location["latitud"])
-		current_location["longitud"] = int(40075000 * cos(current_location["longitud"]) / 360)
-		current_location["altitude"] = int(0.3048 * current_location["altitude"])
 
 		thisdict = {
 			"id": "21312",
@@ -61,24 +49,16 @@ class DBStorage:
 			query of all updated values, returns a dictionary
 			with all the information
 		"""
-		thisdict = {
-			"latitud": int(69.69),
-			"longitud": int(69.69),
-			"altitude": int(6969),
-			"truck": "6969",
-			"speed": "6969",
-			"vertical_speed": "6969",
-			"departure_date": "6969",
-			"departure_time": "6969",
-			"arrival_date": "6969",
-			"arrival_time": "6969"
-		}
-		lista_flightpath = [thisdict, thisdict, thisdict]
+		with open("/home/ubuntu/atcas/ATCAS/test_flights/{:}.json".format(id), 'r') as f:
+			dic_load = dict(json.load(f))
+			listaaaa = dic_load["Path"]
+		lista_flightpath = dic_load["Path"]
+		"""
 		for element in lista_flightpath:
-			element["latitud"] = int(111320 * element["latitud"])
-			element["longitud"] = int(40075000 * cos(element["longitud"]) / 360)
-			element["altitude"] = int(0.3048 * element["altitude"])
-
+			element["latitud"] = float(111320 * element["latitud"])
+			element["longitud"] = (element["longitud"] * (float(111319.444 * cos(element["longitud"]))
+			element["altitude"] = float(0.3048 * element["altitude"])
+		"""
 		return lista_flightpath
 
 	def airport_query(self):
