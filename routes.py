@@ -1,20 +1,33 @@
 #!/usr/bin/python3
 import os
 from os.path import exists
-from datetime import datetime
-from datetime import timedelta
 
 def clean_input(file_name):
+  """
+  converts a flight position file (.csv) to a .json file
+  where there are only the positions located within the airspace
+  and the time is simplified so there are no seconds other than 00 or 30
+  returns a .json file with the filtered and modified data
+  """
   try:
+    #load the csv file and convert it to a list
     with open(file_name + '.csv', 'r') as input_data:
-      with open(file_name + '.json', 'w', encoding='utf=8') as output_data:
-        output_data.write('{' + '\n  "Callsign": "{}",\n  "Path": [\n'.format(file_name))
+      data = []
       for line in input_data:
-        data = (line.strip()).split(',')
-        if ('UTC' in data):
-          continue
-        lat = float(data[3][1:])
-        lon = float(data[4][:-1])
+        data.append((line.strip()).split(','))
+      data.pop(0)
+      for status in data:
+        status.pop(0)
+        status[2] = float(status[2][1:])
+        status[3] = float(status[3][:-1])
+      
+      #filters positions, entries that have positions outside the airspace are removed from the list
+      #and those that are within the airspace have the time modified to make it simpler
+      i = 0
+      lenght = len(data)
+      while i < lenght:
+        lat = data[i][2]
+        lon = data[i][3]
         if (((lat > -35.15 and lat < -34.65) and (lon > -57.20 and lon < -53.25))
             or ((lat > -34.65 and lat < -34.25) and (lon > -58.15 and lon < -53.25))
             or ((lat > -34.25 and lat < -33.05) and (lon > -58.75 and lon < -53.25))
@@ -23,70 +36,37 @@ def clean_input(file_name):
             or ((lat > -32.50 and lat < -31.75) and (lon > -54.30 and lon < -53.50))
             or ((lat > -31.40 and lat < -30.00) and (lon > -58.15 and lon < -56.00))
             or ((lat > -31.40 and lat < -30.75) and (lon > -56.00 and lon < -54.80))):
-          with open(file_name + '.json', 'a', encoding='utf=8') as output_data:
-            output_line = '    {\n'
-            output_line = output_line + '      "latitude": {},\n'.format(lat)
-            output_line = output_line + '      "longitude": {},\n'.format(lon)
-            output_line = output_line + '      "altitude": {},\n'.format(data[5])
-            output_line = output_line + '      "speed": {},\n'.format(int(data[6]))
-            output_line = output_line + '      "truck": {},\n'.format(int(data[7]))
-            output_line = output_line + '      "time": "{}"\n'.format(data[1])
-            output_line = output_line + '    },\n'
-            output_data.write(output_line)
-          output_data.close()
-      cmd = "cat " + file_name + ".json | head -n-1 > results_" + file_name + ".json"
-      os.system(cmd)
-      with open('results_' + file_name + '.json', 'a', encoding='utf=8') as output_data:
-        output_data.write('    }\n  ]\n}\n')
-      if (os.path.exists(file_name + '.json')):
-        os.remove(file_name + '.json')
-      os.rename('results_' + file_name + '.json', file_name + '.json')
-  except FileNotFoundError:
-    print("error: file not found")
-
-
-def clean_output(file_name):
-  try:
-    with open(file_name + '.csv', 'r') as input_data:
-      with open(file_name + '.tmp', 'w', encoding='utf=8') as output_data:
-        for line in input_data:
-          data = (line.strip()).split(',')
-          if ('UTC' in data):
-            continue
-          seconds = int(data[1][17:-1])
-          if (seconds >= 0 and seconds < 15):
-            data[1] = data[1][:16] + ':00Z'
+          seconds = int(data[i][0][17:-1])
+          if (seconds >= 0 and seconds < 30):
+            data[i][0] = data[i][0][:16] + ':00Z'
           else:
-            data[1] = data[1][:16] + ':30Z'
-          output_line = data[0]+','+data[1]+','+data[2]+','+data[3]+','+data[4]+','+data[5]+','+data[6]+','+data[7]+'\n'
-          output_data.write(output_line)
-  except FileNotFoundError:
-    print("error: file not found")
+            data[i][0] = data[i][0][:16] + ':30Z'
+          i += 1
+        else:
+          data.pop(i)
+          lenght -=1
+        if i == len(data):
+          break
+      callsign = data[0][1]
+      for status in data:
+        status.pop(1)
 
-
-def complete_output(file_name):
-  try:
-    with open(file_name + '_log.csv', 'w', encoding='utf=8') as output_data:
-      file_lenght = len(open(file_name + '.tmp', 'r').readlines())
-      first_line = open(file_name + '.tmp', 'r').readlines()[0]
-      output_data.write(first_line)
-      for i in range (1, file_lenght - 1):
-        
-        curr_line = open(file_name + '.tmp', 'r').readlines()[i]
-        data = (curr_line.strip()).split(',')
-        curr_time = data[1]
-        #curr_time = datetime.strptime(data[1], '%Y-%m-%dT%H:%M:%SZ')
-
-        next_line = open(file_name + '.tmp', 'r').readlines()[i + 1]
-        data = (next_line.strip()).split(',')
-        next_time = data[1]
-        #next_time = datetime.strptime(data[1], '%Y-%m-%dT%H:%M:%SZ')
-        
-        if (curr_time != next_time):
-          output_data.write(next_line)
-        clean_input(file_name + '_log')
-
-
+    #reorder already filtered list and write it to json file
+    with open(file_name + '.json', 'w') as output_data:
+      output_data.write('{' + '\n  "callsign": "{}",\n  "Path": [\n'.format(callsign))
+      for i in range(len(data)):
+        output_line = '    {\n'
+        output_line = output_line + '      "latitude": {},\n'.format(data[i][1])
+        output_line = output_line + '      "longitude": {},\n'.format(data[i][2])
+        output_line = output_line + '      "altitude": {},\n'.format(int(data[i][3]))
+        output_line = output_line + '      "speed": {},\n'.format(int(data[i][4]))
+        output_line = output_line + '      "truck": {},\n'.format(int(data[i][5]))
+        output_line = output_line + '      "time": "{}"\n'.format(data[i][0])
+        if i < len(data) - 1:
+          output_line = output_line + '    },\n'
+        else:
+          output_line = output_line + '    }\n  ]\n}\n'
+        output_data.write(output_line)
   except FileNotFoundError:
     print("error: file not found")
 
@@ -94,6 +74,3 @@ def complete_output(file_name):
 if __name__ == '__main__':
   file_name = input('file_name: ')
   clean_input(file_name)
-  clean_output(file_name)
-  complete_output(file_name)
-  
