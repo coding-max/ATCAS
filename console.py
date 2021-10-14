@@ -27,23 +27,30 @@ class ATCAScmd(cmd.Cmd):
 		return True
 
 	def do_create(self, arg):
+		"""creates a plane based in its id, if id is none, create all planes"""
 		args = arg.split()
 		if len(args) == 0:
-			print("**Missing: id**")
+			for plane in Airport.airplane_list:
+				avion = Aircraft(str(plane))
 			return False
-		if (args[0] not in Airport.airplane_list):
-			print("**Invalid: id. Run callsigns for valid id's**")
-			return False
-		for pos in range(0, len(args)):
-			avion = Aircraft(args[pos])
+		for pos in range(len(args)):
+			if (args[pos] not in Airport.airplane_list):
+				print("**Inval IATA: {:}. Run callsigns for valid id's**".format(args[pos]))
+			else:
+				if args[pos] not in Airport.mapped_planes:
+					avion = Aircraft(args[pos])
+					Airport.mapped_planes.append(args[pos])
+				else:
+					print("**{:} Already mapped".format(args[pos]))
 
 	def do_add(self, arg):
+		"""adds a plane to the current airspace"""
 		args = arg.split()
 		if len(args) == 0:
 			print("**Missing: id**")
 			return False
 		for obj in Aircraft.plane_list:
-			if str(obj.id)  == str(args[0]):
+			if str(obj.IATA)  == str(args[0]):
 				if aeropuerto.can_add(obj):
 					print("Adding plane to airspace...")
 					aeropuerto.add_plane(obj)
@@ -56,33 +63,36 @@ class ATCAScmd(cmd.Cmd):
 				print(obj)
 		if len(args) == 1:
 			for obj in Aircraft.plane_list:
-				if str(obj.id)  == str(args[0]):
+				if str(obj.IATA)  == str(args[0]):
 					print(obj)
 
 	def do_airports(self, arg):
+		"""prints planes in current workspace"""
 		print(aeropuerto)
 
 	def do_update(self, arg):
+		"""updates the current location and time of a given aircraft"""
 		args = arg.split()
 		if len(args) == 0:
 			print("missing ID")
 		if len(args) == 1:
 			for obj in Aircraft.plane_list:
-				if str(obj.id)  == str(args[0]):
+				if str(obj.IATA)  == str(args[0]):
 					obj.update()
 					print(obj)
 		
-
+	#this method breaks the list generated of collisions, double imput
 	def do_collision(self, arg):
+		"""prints collision between 2 given aircrafts"""
 		args = arg.split()
 		avion1 = avion2 = None
 		if len(args) <= 1:
 			print("missing ID´s")
 		if len(args) == 2:
 			for obj in Aircraft.plane_list:
-				if str(obj.id)  == str(args[0]):
+				if str(obj.IATA)  == str(args[0]):
 					avion1 = obj				
-				if str(obj.id)  == str(args[1]):
+				if str(obj.IATA)  == str(args[1]):
 					avion2 = obj
 			if avion1 and avion2:
 				collision_list = avion1.collision(avion2)
@@ -112,12 +122,13 @@ class ATCAScmd(cmd.Cmd):
 		if len(args) == 0:
 			print("missing ID´s")
 		for obj in Aircraft.plane_list:
-			if str(obj.id)  == str(args[0]):
+			if str(obj.IATA)  == str(args[0]):
 				avion1 = obj
 		if avion1 is not None:
 			print(avion1.collision_l) #if self.new_route(self):
 		
 	def do_callsigns(self, arg):
+		"""prints a list of all airplanes available for creadtion"""
 		print(Airport.airplane_list)
 
 if __name__ == '__main__':

@@ -10,8 +10,11 @@ import json
 class Airport():
 	with open("/home/ubuntu/atcas/ATCAS/test_flights/flights.json", 'r') as f:
 		airplane_list = dict(json.load(f))["planes"]
-	def __init__(self, args):
+	map_collisions = []
+	mapped_planes = []
 
+	def __init__(self, args):
+		"""firs load of the airport instance"""
 		airport_dict = models.storage.airport_query()
 		self.id = airport_dict["id"]
 		self.ICAO = airport_dict["ICAO"]
@@ -38,21 +41,9 @@ class Airport():
 		return new_dict
 
 	def add_plane(self, avion):
-		chocaron = False
-		for x in range(0, 2):
-			for y in range(0, 2):
-				for z in range(0, 2):
-					self.airspace[x, y, z][avion.flightpath[x, y, z]] = avion.id
+		"""adds plane to airspace"""
 
 	def can_add(self, avion):
-		add = True
-		for x in range(0, 2):
-			for y in range(0, 2):
-				for z in range(0, 2):
-					if avion.flightpath[x, y, z] in self.airspace[x, y, z]:
-						print("Collision; time: {:}".format(avion.flightpath[x, y, z]), end="")
-						print(", place: [{:}, {:}, {:}],".format(x, y, z), end="")
-						print(" with {:}".format(self.airspace[x, y, z][avion.flightpath[x, y, z]]))
-						"""print("Collision; time: {:}, place: [{:}, {:}, {:}], with: {:}".format(avion.flightpath[x, y, z], x, y, z, ), self.airspace[x, y, z][avion.flightpath[x, y, z]])"""
-						add = False
-		return add
+		"""checks if a plane can be added to airspace"""
+
+	

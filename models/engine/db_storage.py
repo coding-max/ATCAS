@@ -5,6 +5,9 @@ Contains the class DBStorage
 import models
 from math import cos
 import json
+import pymysql
+import copy
+import models.engine.db_querys as querys
 
 class DBStorage:
 	"""class to interact with database"""
@@ -21,7 +24,7 @@ class DBStorage:
 			"pluna89"
 		}
 
-	def aircraft_query_id(self, id=None):
+	def aircraft_query_id(self, flight_id=None):
 		"""
 			aircraft, flight status, departure and arrivals query
 			Makes query and returns a dictionary with all components
@@ -30,35 +33,63 @@ class DBStorage:
 			all fligths in the data base, with their repsective information
 			ex: ["id": 7439395, "type": 747-800, etc...]
 		"""
+		flights = querys.get_flight(flight_id)
 		current_location = {
 		}
+		flight = flights[0]
+		aircraft_data = {
+			"IATA": flight[0],
+			"ICAO": flight[1],
 
-		thisdict = {
-			"id": "21312",
-			"type": "747-800",
-			"registration": "Cuba",
-			"airline": "copailines",
-			"country": "uruguay",
-			"current_location": current_location,
-			"ICAO": "ICAO"
+			#Departure data
+			"departure_IATA": flight[2],
+			"departure_ICAO": flight[3],
+			"departure_airport": flight[4],
+			"departure_city": flight[5],
+			"departure_country": flight[6],
+			"departure_time": flight[7],
+			"departure_latitude": flight[8],
+			"departure_longitude": flight[9],
+
+			#Arrival data
+			"arrival_IATA": flight[10],
+			"arrival_ICAO": flight[11],
+			"arrival_airport": flight[12],
+			"arrival_city": flight[13],
+			"arrival_country": flight[14],
+			"arrival_time": flight[15],
+			"arrival_latitude": flight[16],
+			"arrival_longitude": flight[17],
+
+			#Aircaft data
+			"registration": flight[18],
+			"type": flight[19],
+			"airline": flight[20],
+
+			"current_location": current_location
 		}
-		return thisdict
+		return aircraft_data
 	
-	def aircraft_query_update(self, id=None):
+	def aircraft_query_update(self, flight_id=None):
 		"""
 			query of all updated values, returns a dictionary
 			with all the information
 		"""
-		with open("/home/ubuntu/atcas/ATCAS/test_flights/{:}.json".format(id), 'r') as f:
-			dic_load = dict(json.load(f))
-			listaaaa = dic_load["Path"]
-		lista_flightpath = dic_load["Path"]
-		"""
-		for element in lista_flightpath:
-			element["latitud"] = float(111320 * element["latitud"])
-			element["longitud"] = (element["longitud"] * (float(111319.444 * cos(element["longitud"]))
-			element["altitude"] = float(0.3048 * element["altitude"])
-		"""
+
+		#this is to taste collisions
+		""""
+		thisdict = {
+			"latitude": int(69.69),
+			"longitude": int(69.69),
+			"altitude": int(6969),
+			"speed": "6969",
+			"truck": "6969",
+			"time": "6969",
+			"vertical_speed": "0",
+		}
+		lista_flightpath = [thisdict, thisdict, thisdict]"""
+
+		lista_flightpath = querys.get_path(flight_id)["Path"]
 		return lista_flightpath
 
 	def airport_query(self):
