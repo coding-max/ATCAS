@@ -1,0 +1,8 @@
+{
+    "db_credentials": {
+        "host": "HOST",
+        "user": "USER",
+        "password": "PASSWORD",
+        "database": "DATABASE"
+    }
+}
