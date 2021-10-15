@@ -8,21 +8,22 @@ import numpy as np
 import json
 
 class Airport():
-	with open("/home/ubuntu/atcas/ATCAS/test_flights/flights.json", 'r') as f:
-		airplane_list = dict(json.load(f))["planes"]
+	airplane_list = models.storage.all_ids()
 	map_collisions = []
 	mapped_planes = []
 
 	def __init__(self, args):
 		"""firs load of the airport instance"""
-		airport_dict = models.storage.airport_query()
-		self.id = airport_dict["id"]
+		airport_dict = models.storage.airport_query(args)
+		self.id = airport_dict["IATA"]
 		self.ICAO = airport_dict["ICAO"]
 		self.name = airport_dict["name"]
 		self.city = airport_dict["city"]
 		self.country = airport_dict["country"]
-		self.arrivals = models.storage.airport_arrivals()
-		self.departure = models.storage.airport_departures()
+		self.latitude = airport_dict["latitude"]
+		self.longitude = airport_dict["longitude"]
+		self.arrivals = models.storage.airport_arrivals(args)
+		self.departure = models.storage.airport_departures(args)
 
 
 	def __str__(self):

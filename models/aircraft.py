@@ -16,7 +16,7 @@ class Aircraft(object):
 	instancecount = 0
 	plane_list = []
 
-	#default safety measures and rate of refresh of the data (amount of refresh in a minute)
+	#default safety measures and rate of refresh of the data (amount of refresh's in a minute)
 	safety_vertical = 304.8
 	safety_horizontal = 4828.03
 	refresh_rate = 2
@@ -24,12 +24,12 @@ class Aircraft(object):
 
 	def __init__(self, args):
 		"""method to assign all variables when creating an instance of Aircraft"""
-		#query for all data
+		#Query for all data
 		aircraft_data = models.storage.aircraft_query_id(args)
 		self.IATA = aircraft_data["IATA"]
 		self.ICAO = aircraft_data["ICAO"]
 
-		#laod departure information
+		#Load departure information
 		self.departure_IATA = aircraft_data["departure_IATA"]
 		self.departure_ICAO = aircraft_data["departure_ICAO"]
 		self.departure_airport = aircraft_data["departure_airport"]
@@ -39,7 +39,7 @@ class Aircraft(object):
 		self.departure_latitude = aircraft_data["departure_latitude"]
 		self.departure_longitude = aircraft_data["departure_longitude"]
 
-		#laod arrival information
+		#Load arrival information
 		self.arrival_IATA = aircraft_data["arrival_IATA"]
 		self.arrival_ICAO = aircraft_data["arrival_ICAO"]
 		self.arrival_airport = aircraft_data["arrival_airport"]
@@ -87,12 +87,14 @@ class Aircraft(object):
 		self.path = aircraft_data
 		self.current_path += 1
 
-	#still need to fix when the length of one of the lists is longer, adn fails on index´s
+	#still need to fix when the length of one of the lists is longer, and fails on index´s
 	def collision(self, avion2):
 		"""detects a colision between 2 aircrafts"""
 		pos = 0
 		Airport.map_collisions = []
 		for element in self.path[self.current_path:]:
+			if (avion2.path[(avion2.current_path) + pos] is None):
+				break
 			lat1 = radians(element["latitude"])
 			lat2 = radians(avion2.path[(avion2.current_path) + pos]["latitude"])
 			lon1 = radians(element["longitude"])
@@ -136,4 +138,5 @@ class Aircraft(object):
 
 	def new_route(self):
 		"""Preliminar suggestion of deviating route based on altitude"""
+		
 

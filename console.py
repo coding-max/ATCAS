@@ -9,7 +9,7 @@ from models.aircraft import Aircraft
 from models.airport import Airport
 import math
 
-aeropuerto = Airport(1)
+aeropuerto = Airport("MVD")
 
 class ATCAScmd(cmd.Cmd):
 	prompt = '(^--|-->) '
@@ -32,10 +32,11 @@ class ATCAScmd(cmd.Cmd):
 		if len(args) == 0:
 			for plane in Airport.airplane_list:
 				avion = Aircraft(str(plane))
+				Airport.mapped_planes.append(str(plane))
 			return False
 		for pos in range(len(args)):
 			if (args[pos] not in Airport.airplane_list):
-				print("**Inval IATA: {:}. Run callsigns for valid id's**".format(args[pos]))
+				print("**Invalid IATA: {:}. Run callsigns for valid id's**".format(args[pos]))
 			else:
 				if args[pos] not in Airport.mapped_planes:
 					avion = Aircraft(args[pos])
@@ -66,9 +67,15 @@ class ATCAScmd(cmd.Cmd):
 				if str(obj.IATA)  == str(args[0]):
 					print(obj)
 
+	#this method creates an instance of a new airport, each time it tryes to print it
 	def do_airports(self, arg):
 		"""prints planes in current workspace"""
-		print(aeropuerto)
+		args = arg.split()
+		if len(args) == 0:
+			print(aeropuerto)
+		else:
+			for airports in args:
+				print(Airport(airports))
 
 	def do_update(self, arg):
 		"""updates the current location and time of a given aircraft"""
@@ -130,6 +137,11 @@ class ATCAScmd(cmd.Cmd):
 	def do_callsigns(self, arg):
 		"""prints a list of all airplanes available for creadtion"""
 		print(Airport.airplane_list)
+
+	def do_test(self, arg):
+		""""method for testing"""
+		print(Airport("EZE"))
+
 
 if __name__ == '__main__':
     ATCAScmd().cmdloop()
