@@ -1,6 +1,0 @@
-models/__pycache__/
-__pycache__
-test_*
-config.json
-db_querys.py
-models/engine/__pycache__
