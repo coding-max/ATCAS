@@ -19,10 +19,10 @@ class DBStorage:
 		"""
 			returns a list of all flight id's
 		"""
-		id_dick = {
-			"ibe01",
-			"pluna89"
-		}
+		iata_list = []
+		for iatas in querys.get_flights_ids():
+			iata_list.append(iatas[0])
+		return iata_list
 
 	def aircraft_query_id(self, flight_id=None):
 		"""
@@ -77,7 +77,8 @@ class DBStorage:
 		"""
 
 		#this is to taste collisions
-		""""
+
+		"""
 		thisdict = {
 			"latitude": int(69.69),
 			"longitude": int(69.69),
@@ -92,44 +93,51 @@ class DBStorage:
 		lista_flightpath = querys.get_path(flight_id)["Path"]
 		return lista_flightpath
 
-	def airport_query(self):
+	def airport_query(self, IATA):
 		"""
 			Returns a dictionary contaiinitn all information regarding
 			airports
         """
-		thisdict = {
-			"id": "MVD",
-			"ICAO": "SUMU",
-			"name": "Carrasco International Airport",
-			"city": "Montevideo",
-			"country": "Uruguay",
-		}
-		return thisdict
 
-	def airport_departures(self):
+		airports = querys.get_airport(IATA)
+		airport = airports[0]
+		airport_data = {
+			"IATA": airport[0],
+			"name": airport[1],
+			"country": airport[2],
+			"city": airport[3],
+			"latitude": airport[4],
+			"longitude":airport[5],
+			"ICAO": airport[6]
+		}
+		return airport_data
+
+	def airport_departures(self, IATA):
 		"""
 			returns a dictionary containing all flight departuring from selected airport
 		"""
-		thisdict = {
-			"5.35": "1",
-			"5.45": "2",
-			"5.55": "3",
-			"6.35": "4",
-			"6.45": "5",
-			"6.45": "6",
-		}
-		return thisdict
+		departure_list = []
+		departures = querys.get_departures(IATA)
+		if departures:
+			for departing in departures:
+				departure_data = {
+					"IATA" : departing[0],
+					"time": departing[1]
+				}
+			departure_list.append(copy.deepcopy(departure_data))
+		return departure_list
 
-	def airport_arrivals(self):
+	def airport_arrivals(self, IATA=None):
 		"""
 			returns a dictionary containing all flight arrivals from selected airport
 		"""
-		thisdict = {
-			"5.35": "7",
-			"5.45": "8",
-			"5.55": "9",
-			"6.35": "10",
-			"6.45": "11",
-			"6.45": "12",
-		}
-		return thisdict
+		arrival_list = []
+		arrivals = querys.get_arrivals(IATA)
+		if arrivals:
+			for arriving in arrivals:
+				arrival_data = {
+					"IATA" : arriving[0],
+					"time": arriving[1]
+				}
+			arrival_list.append(copy.deepcopy(arrival_data))
+		return arrival_list
