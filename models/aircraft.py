@@ -136,7 +136,14 @@ class Aircraft(object):
 				total_collisions = total_collisions + plane.collision(plane2)
 		return total_collisions
 
-	def new_route(self):
+	def new_route(plane1, plane2):
 		"""Preliminar suggestion of deviating route based on altitude"""
-		
+		route_for1 = {
+
+		}
+
+		route_for2 = {
+			
+		}
+
 
