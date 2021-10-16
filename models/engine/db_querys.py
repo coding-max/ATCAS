@@ -100,5 +100,11 @@ def get_arrivals(IATA_code):
 #todo -> replace the way the flight path is loaded
 #method used for development purposes
 def get_path(flight_id=None):
-	with open("/home/ubuntu/atcas/ATCAS/test_flights/{:}.json".format(flight_id), 'r') as f:
-		return dict(json.load(f))
+	try:
+		with open("/home/ubuntu/atcas/ATCAS/test_flights/{:}.json".format(flight_id), 'r') as f:
+			return dict(json.load(f))
+	except:
+		dictionary = {
+			"Path": [],
+		}
+		return dictionary

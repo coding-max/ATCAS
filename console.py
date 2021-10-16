@@ -140,7 +140,7 @@ class ATCAScmd(cmd.Cmd):
 
 	def do_test(self, arg):
 		""""method for testing"""
-		print(Airport("EZE"))
+		print(Aircraft.point_ahead(-32.940083, -53.371582, 48, 8.333333333333333333333333332))
 
 
 if __name__ == '__main__':

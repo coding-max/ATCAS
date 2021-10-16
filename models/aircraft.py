@@ -7,7 +7,8 @@ import models
 import copy
 import numpy as np
 from models.airport import Airport
-from math import radians, cos, sin, asin, sqrt, pow
+from math import radians, cos, sin, asin, sqrt, pow, atan2, pi
+from datetime import datetime
 
 class Aircraft(object):
 	"Class model for all aircrafts"
@@ -60,11 +61,13 @@ class Aircraft(object):
 
 		#collisions information
 		self.collision_l = []
-		self.newpath = []
+		self.suggested_flightmath = []
+		self.estimated_flightpath = []
 
 		#adds to list of instances
 		Aircraft.plane_list.append(self)
 		Aircraft.instancecount += 1
+
 
 	def __str__(self):
 		"""String representation of the Aircraft class"""
@@ -143,7 +146,31 @@ class Aircraft(object):
 		}
 
 		route_for2 = {
-			
+
 		}
+	def preliminar_route(plane):
+		"""Method that creates a preliminar route for a plane"""
+		
+	def point_ahead(lat, long, truck, d):
+		"""
+			Given a start point, initial bearing, and distance,
+			this will calculate the destina­tion point and final bearing
+			travelling along a (shortest distance) great circle arc.
+		"""
+		#Earth radious
+		r = 6371
 
+		#Calculation of point in radians
+		final_lat = asin(sin(radians(lat)) * cos(d/r) + cos(radians(lat)) * sin(d/r) * cos(radians(truck)))
+		final_long = radians(long) + atan2(sin(radians(truck)) * sin(d/r) * cos(radians(lat)), cos(d/r) - sin(radians(lat)) * sin(final_lat))
 
+		#Conversiion to decimal degrees
+		final_lat = final_lat * 180 / pi
+		final_long = final_long * 180 / pi
+
+		#Load into dictionary for return
+		final_point = {
+			"latitude": final_lat,
+			"longitude": final_long
+		}
+		return final_point
