@@ -105,6 +105,16 @@ def get_path(flight_id=None):
 			return dict(json.load(f))
 	except:
 		dictionary = {
-			"Path": [],
+			"Callsign": flight_id,
+			"Path": [
+				{
+					"latitude": -30.064087,
+					"longitude": -57.743427,
+					"altitude": 37000,
+					"speed": 453,
+					"truck": 155,
+					"time": "2021-10-12T22:54:30Z"
+				}
+			]
 		}
 		return dictionary

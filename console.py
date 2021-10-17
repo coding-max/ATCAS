@@ -41,6 +41,7 @@ class ATCAScmd(cmd.Cmd):
 				if args[pos] not in Airport.mapped_planes:
 					avion = Aircraft(args[pos])
 					Airport.mapped_planes.append(args[pos])
+					avion.create_estimated_flightpath()
 				else:
 					print("**{:} Already mapped".format(args[pos]))
 
@@ -138,9 +139,14 @@ class ATCAScmd(cmd.Cmd):
 		"""prints a list of all airplanes available for creadtion"""
 		print(Airport.airplane_list)
 
+
+	#method used for tests
 	def do_test(self, arg):
 		""""method for testing"""
-		print(Aircraft.point_ahead(-32.940083, -53.371582, 48, 8.333333333333333333333333332))
+		Aircraft("TK6169")
+		plane = Aircraft.plane_list[0]
+		print(plane.create_estimated_flightpath())
+
 
 
 if __name__ == '__main__':
