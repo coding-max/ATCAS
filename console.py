@@ -145,7 +145,9 @@ class ATCAScmd(cmd.Cmd):
 		""""method for testing"""
 		Aircraft("TK6169")
 		plane = Aircraft.plane_list[0]
-		print(plane.create_estimated_flightpath())
+		plane.update()
+		print(plane.working_altitude)
+		plane.new_route()
 
 
 

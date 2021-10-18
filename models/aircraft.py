@@ -8,7 +8,7 @@ import copy
 import numpy as np
 from models.airport import Airport
 from math import radians, cos, sin, asin, sqrt, pow, atan2, pi
-from datetime import datetime
+from datetime import date, datetime, timedelta
 
 class Aircraft(object):
 	"Class model for all aircrafts"
@@ -18,10 +18,24 @@ class Aircraft(object):
 	plane_list = []
 
 	#default safety measures and rate of refresh of the data (amount of refresh's in a minute)
-	safety_vertical = 304.8
+	safety_vertical = 1000
 	safety_horizontal = 4828.03
 	refresh_rate = 2
-	descent_rate = 305 / refresh_rate
+	descent_rate = 1000 / refresh_rate
+	permited_altitudes = {
+		"truck0": [2000, 3900, 5900, 7900,
+				   9800, 11800, 13800, 15700,
+				   17700, 19700, 21700, 23600,
+				   25600, 28200, 31500, 34800,
+				   38100, 43000, 49500],
+				   #and evey 2000 meters after
+		"truck1": [3000, 4900, 6900, 8900,
+				   10800, 12800, 14800, 16700,
+				   18700, 20700, 22600, 24600,
+				   26600, 29900, 33100, 36400,
+				   39700, 46300]
+				   #and evey 2000 meters after
+	}
 
 	def __init__(self, args):
 		"""method to assign all variables when creating an instance of Aircraft"""
@@ -54,6 +68,7 @@ class Aircraft(object):
 		self.registration = aircraft_data["registration"]
 		self.type = aircraft_data["type"]
 		self.airline = aircraft_data["airline"]
+		self.working_altitude = 0
 
 		#Queries for dinamic information
 		self.path = models.storage.aircraft_query_update(args)
@@ -91,10 +106,25 @@ class Aircraft(object):
 
 	def update(self):
 		"""update all information of aircraft"""
+		pos = 0
 		if (self.manifesto):
+			path1 = self.path
 			self.current_path += 1
+			starting_point1 = self.current_path
 		else:
-			self.create_estimated_flightpath()
+			path1 = self.estimated_flightpath
+			starting_point1 = 0
+		self.create_estimated_flightpath()
+		if (path1[starting_point1]["truck"] > 180):
+			side = "truck0"
+		else:
+			side = "truck1"
+		for elem in Aircraft.permited_altitudes[side]:
+			if (abs(elem - path1[starting_point1]["altitude"]) < 500):
+				self.working_altitude = pos
+				break
+			pos += 1
+
 
 	#Collisons needs at least the current position of the aircraft loaded into the path
 	def collision(self, avion2):
@@ -157,34 +187,55 @@ class Aircraft(object):
 				total_collisions = total_collisions + plane.collision(plane2)
 		return total_collisions
 
-	def new_route(plane1, plane2):
+	def new_route(self, target):
 		"""Preliminar suggestion of deviating route based on altitude"""
-		route_for1 = {
+		self.create_estimated_flightpath(-1000)
+		self.collision(target)
 
-		}
 
-		route_for2 = {
-
-		}
 
 	#To create an estimated flightpath, an initial path list with current location and time is needed
-	def create_estimated_flightpath(self):
+	def create_estimated_flightpath(self, altitude_to_descend=0):
 		"""Method that creates a preliminar route for a plane"""
 		flightpath = []
+		current_time = datetime.strptime(self.path[self.current_path]["time"], '%Y-%m-%dt%H:%M:%Sz')
+		current_time = current_time + timedelta(0, Aircraft.refresh_rate)
+		if altitude_to_descend == 0:
+			delta_altitude = 0
+		if altitude_to_descend > 0:
+			delta_altitude = 1000 / Aircraft.refresh_rate
+		else:
+			delta_altitude = -1000 / Aircraft.refresh_rate
+
+		altitude_to_descend -= delta_altitude
 		next_location = self.point_ahead(self.path[self.current_path]["latitude"],
 										 self.path[self.current_path]["longitude"],
 										 self.path[self.current_path]["truck"],
 										 self.path[self.current_path]["speed"],
-										 self.path[self.current_path]["time"],
-										 self.path[self.current_path]["altitude"])
+										 current_time.strftime('%Y-%m-%dt%H:%M:%Sz'),
+										 self.path[self.current_path]["altitude"] + delta_altitude)
+		flightpath.append(copy.deepcopy(next_location))
 		#This while needs to be corrected to fit critera inside airspace
-		while((next_location["latitude"] > -40.6) and (next_location["longitude"] > -60)):
+		while(((next_location["latitude"] > -35.15 and next_location["latitude"] < -34.65) and (next_location["longitude"] > -57.20 and next_location["longitude"] < -53.25))
+				or ((next_location["latitude"] > -34.65 and next_location["latitude"] < -34.25) and (next_location["longitude"] > -58.15 and next_location["longitude"] < -53.25))
+				or ((next_location["latitude"] > -34.25 and next_location["latitude"] < -33.05) and (next_location["longitude"] > -58.75 and next_location["longitude"] < -53.25))
+				or ((next_location["latitude"] > -33.05 and next_location["latitude"] < -31.40) and (next_location["longitude"] > -58.50 and next_location["longitude"] < -54.30))
+				or ((next_location["latitude"] > -33.05 and next_location["latitude"] < -32.50) and (next_location["longitude"] > -54.30 and next_location["longitude"] < -52.95))
+				or ((next_location["latitude"] > -32.50 and next_location["latitude"] < -31.75) and (next_location["longitude"] > -54.30 and next_location["longitude"] < -53.50))
+				or ((next_location["latitude"] > -31.40 and next_location["latitude"] < -30.00) and (next_location["longitude"] > -58.15 and next_location["longitude"] < -56.00))
+				or ((next_location["latitude"] > -31.40 and next_location["latitude"] < -30.75) and (next_location["longitude"] > -56.00 and next_location["longitude"] < -54.80))):
+
+			if (altitude_to_descend > -500) and (altitude_to_descend < 500):
+				delta_altitude = 0
+			else:
+				altitude_to_descend -= delta_altitude
+			current_time = current_time + timedelta(0, Aircraft.refresh_rate)
 			next_location = self.point_ahead(next_location["latitude"],
 											 next_location["longitude"],
 											 self.path[self.current_path]["truck"],
 											 self.path[self.current_path]["speed"],
-											 self.path[self.current_path]["time"],
-											 self.path[self.current_path]["altitude"])
+											 current_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+											 next_location["altitude"] + delta_altitude)
 			flightpath.append(copy.deepcopy(next_location))
 		self.estimated_flightpath = flightpath
 		return flightpath

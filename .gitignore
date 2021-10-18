@@ -7,3 +7,4 @@ tests/*
 paths/*
 others/*
 map.py
+config.json
