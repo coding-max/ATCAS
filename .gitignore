@@ -1,8 +1,8 @@
+models/engine/__pycache__
 models/__pycache__/
 __pycache__
 test_*
 config.json
-models/engine/__pycache__
 tests/*
 paths/*
 others/*

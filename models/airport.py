@@ -46,5 +46,3 @@ class Airport():
 
 	def can_add(self, avion):
 		"""checks if a plane can be added to airspace"""
-
-	
