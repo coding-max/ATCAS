@@ -7,7 +7,7 @@ import pymysql
 import json
 
 #todo -> change config file location and set relative path
-with open('/home/ubuntu/atcas/ATCAS/models/engine/config.json', 'r') as config:
+with open('././config.json', 'r') as config:
 	credentials = dict(json.load(config))["db_credentials"]
 	host = credentials['host']
 	user = credentials['user']
@@ -100,5 +100,23 @@ def get_arrivals(IATA_code):
 #todo -> replace the way the flight path is loaded
 #method used for development purposes
 def get_path(flight_id=None):
-	with open("/home/ubuntu/atcas/ATCAS/test_flights/{:}.json".format(flight_id), 'r') as f:
-		return dict(json.load(f))
+	try:
+		with open("././test_flights/{:}.json".format(flight_id), 'r') as f:
+			return dict(json.load(f))
+	except:
+		dictionary = {
+			"Callsign": flight_id,
+
+			#This dictionary needs to be the current position and time of the flight
+			"Path": [
+				{
+					"latitude": -30.064087,
+					"longitude": -57.743427,
+					"altitude": 37000,
+					"speed": 453,
+					"truck": 155,
+					"time": "2021-10-12T22:54:30Z"
+				}
+			]
+		}
+		return dictionary
