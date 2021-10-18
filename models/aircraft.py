@@ -88,15 +88,15 @@ class Aircraft(object):
 		new_dict["__class__"] = self.__class__.__name__
 		return new_dict
 
+
 	def update(self):
 		"""update all information of aircraft"""
 		if (self.manifesto):
-			self.path = aircraft_data
 			self.current_path += 1
 		else:
 			self.create_estimated_flightpath()
 
-	#still need to fix when the length of one of the lists is longer, and fails on index´s
+	#Collisons needs at least the current position of the aircraft loaded into the path
 	def collision(self, avion2):
 		"""detects a colision between 2 aircrafts"""
 		pos = 0
@@ -114,7 +114,7 @@ class Aircraft(object):
 			path2 = avion2.estimated_flightpath
 			starting_point2 = 0
 		for element in path1[starting_point1:]:
-			if (len(path2) < (starting_point2 + pos)):
+			if (len(path2) <= (starting_point2 + pos)):
 				break
 			lat1 = radians(element["latitude"])
 			lat2 = radians(path2[(starting_point2) + pos]["latitude"])
@@ -167,6 +167,7 @@ class Aircraft(object):
 
 		}
 
+	#To create an estimated flightpath, an initial path list with current location and time is needed
 	def create_estimated_flightpath(self):
 		"""Method that creates a preliminar route for a plane"""
 		flightpath = []
