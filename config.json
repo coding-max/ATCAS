@@ -4,5 +4,13 @@
         "user": "USER",
         "password": "PASSWORD",
         "database": "DATABASE"
+    },
+    "api_keys": {
+        "rapidapi": "RAPIDAPI_KEY",
+        "aviationstack": "AVIATIONSTACK_KEY"
+    },
+    "positions":{
+        "latitude": 0,
+        "longitude": 0
     }
 }
