@@ -29,14 +29,16 @@ class ATCAScmd(cmd.Cmd):
 	def do_create(self, arg):
 		"""creates a plane based in its id, if id is none, create all planes"""
 		args = arg.split()
+		Airport.reload(aeropuerto)
 		if len(args) == 0:
 			for plane in Airport.airplane_list:
-				avion = Aircraft(str(plane))
-				Airport.mapped_planes.append(str(plane))
+				if plane not in Airport.mapped_planes:
+					avion = Aircraft(str(plane))
+					Airport.mapped_planes.append(plane)
 			return False
 		for pos in range(len(args)):
 			if (args[pos] not in Airport.airplane_list):
-				print("**Invalid IATA: {:}. Run callsigns for valid id's**".format(args[pos]))
+				print("**Invalid FlightID: {:}. Run callsigns for valid id's**".format(args[pos]))
 			else:
 				if args[pos] not in Airport.mapped_planes:
 					avion = Aircraft(args[pos])
@@ -52,7 +54,7 @@ class ATCAScmd(cmd.Cmd):
 			print("**Missing: id**")
 			return False
 		for obj in Aircraft.plane_list:
-			if str(obj.IATA)  == str(args[0]):
+			if str(obj.FlightID)  == str(args[0]):
 				if aeropuerto.can_add(obj):
 					print("Adding plane to airspace...")
 					aeropuerto.add_plane(obj)
@@ -65,7 +67,7 @@ class ATCAScmd(cmd.Cmd):
 				print(obj)
 		if len(args) == 1:
 			for obj in Aircraft.plane_list:
-				if str(obj.IATA)  == str(args[0]):
+				if str(obj.FlightID)  == str(args[0]):
 					print(obj)
 
 	#this method creates an instance of a new airport, each time it tryes to print it
@@ -85,7 +87,7 @@ class ATCAScmd(cmd.Cmd):
 			print("missing ID")
 		if len(args) == 1:
 			for obj in Aircraft.plane_list:
-				if str(obj.IATA)  == str(args[0]):
+				if str(obj.FlightID)  == str(args[0]):
 					obj.update()
 					print(obj)
 		
@@ -98,15 +100,15 @@ class ATCAScmd(cmd.Cmd):
 			print("missing ID´s")
 		if len(args) == 2:
 			for obj in Aircraft.plane_list:
-				if str(obj.IATA)  == str(args[0]):
+				if str(obj.FlightID)  == str(args[0]):
 					avion1 = obj				
-				if str(obj.IATA)  == str(args[1]):
+				if str(obj.FlightID)  == str(args[1]):
 					avion2 = obj
 			if avion1 and avion2:
 				collision_list = avion1.collision(avion2)
 			for elem in collision_list:
 				#arcoseno = math.acos(float(float(elem["crash_longitude"] / 111319.444)))
-				print("collision between {:} and {:}".format(elem["ID1"], elem["ID2"]), end="")
+				print("collision ID = {:}, between {:} and {:}".format(elem["crash_id"], elem["ID1"], elem["ID2"]), end="")
 				print(" at {:}, on {:} lat, {:} long, {:} alt".format(elem["crash_time"],
 																 	  elem["crash_latitude"],
 																 	  elem["crash_longitude"],
@@ -114,7 +116,8 @@ class ATCAScmd(cmd.Cmd):
 
 	def do_allcollisions(self, arg):
 		"""checks collisions between all aicrafts"""
-		allcollision_list = Aircraft.all_collision(Aircraft.plane_list)
+		#allcollision_list = Aircraft.all_collision(Aircraft.plane_list)
+		allcollision_list = Airport.map_collisions
 		for elem in allcollision_list:
 			#arcoseno = math.acos(float(elem["crash_longitude"] / 111319.444))
 			print("collision between {:} and {:}".format(elem["ID1"], elem["ID2"]), end="")
@@ -130,25 +133,48 @@ class ATCAScmd(cmd.Cmd):
 		if len(args) == 0:
 			print("missing ID´s")
 		for obj in Aircraft.plane_list:
-			if str(obj.IATA)  == str(args[0]):
+			if str(obj.FlightID)  == str(args[0]):
 				avion1 = obj
 		if avion1 is not None:
 			print(avion1.collision_l) #if self.new_route(self):
 		
-	def do_callsigns(self, arg):
+	def do_fids(self, arg):
 		"""prints a list of all airplanes available for creadtion"""
+		Airport.airplane_list = models.storage.all_ids()
 		print(Airport.airplane_list)
 
+	def do_accept_newpath(self, arg):
+		""""accepts new route of changes"""
+		args = arg.split()
+		if (len(args) == 0):
+			for avion in Aircraft.plane_list:
+				if len(avion.suggested_flightpath) > 0:
+					avion.switch_manifesto()
+					avion.suggested_flightpath = []
+		else:
+			for avion in Aircraft.plane_list:
+				if str(avion.FlightID) == str(args[0]):
+					if len(avion.suggested_flightpath) > 0:
+						avion.switch_manifesto()
+						avion.suggested_flightpath = []
 
 	#method used for tests
 	def do_test(self, arg):
 		""""method for testing"""
 		Aircraft("TK6169")
+		Aircraft("CM369")
+		Aircraft("IB6012")
 		plane = Aircraft.plane_list[0]
-		plane.update()
-		print(plane.working_altitude)
-		plane.new_route()
-
+		plane2 = Aircraft.plane_list[1]
+		plane3 = Aircraft.plane_list[2]
+		Aircraft.all_collision(Aircraft.plane_list)
+		for elem in plane.collision_l:
+			print(elem)
+		for elem in plane2.collision_l:
+			print(elem)
+		for elem in plane3.collision_l:
+			print(elem)
+		print(Airport.map_collisions)
 
 
 if __name__ == '__main__':

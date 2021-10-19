@@ -41,32 +41,25 @@ class Aircraft(object):
 		"""method to assign all variables when creating an instance of Aircraft"""
 		#Query for all data
 		aircraft_data = models.storage.aircraft_query_id(args)
+		self.FlightID = aircraft_data["FlightID"]
 		self.IATA = aircraft_data["IATA"]
 		self.ICAO = aircraft_data["ICAO"]
 
 		#Load departure information
 		self.departure_IATA = aircraft_data["departure_IATA"]
 		self.departure_ICAO = aircraft_data["departure_ICAO"]
-		self.departure_airport = aircraft_data["departure_airport"]
-		self.departure_city = aircraft_data["departure_city"]
-		self.departure_country = aircraft_data["departure_country"]
 		self.departure_time = aircraft_data["departure_time"]
-		self.departure_latitude = aircraft_data["departure_latitude"]
-		self.departure_longitude = aircraft_data["departure_longitude"]
+		self.departure_airport = aircraft_data["departure_airport"]
 
 		#Load arrival information
 		self.arrival_IATA = aircraft_data["arrival_IATA"]
 		self.arrival_ICAO = aircraft_data["arrival_ICAO"]
-		self.arrival_airport = aircraft_data["arrival_airport"]
-		self.arrival_city = aircraft_data["arrival_city"]
-		self.arrival_country = aircraft_data["arrival_country"]
 		self.arrival_time = aircraft_data["arrival_time"]
-		self.arrival_latitude = aircraft_data["arrival_latitude"]
-		self.arrival_longitude = aircraft_data["arrival_longitude"]
+		self.arrival_airport = aircraft_data["arrival_airport"]
 
 		#load info regarding aircraft
-		self.registration = aircraft_data["registration"]
 		self.type = aircraft_data["type"]
+		self.registration = aircraft_data["registration"]
 		self.airline = aircraft_data["airline"]
 		self.working_altitude = 0
 
@@ -77,6 +70,12 @@ class Aircraft(object):
 		else:
 			self.manifesto = True
 		self.current_path = 0
+		try:
+			while (datetime.strptime(self.path[self.current_path]["time"], '%Y-%m-%dt%H:%M:%Sz') < datetime.now()):
+				self.current_path += 1
+			self.status = "On air"
+		except:
+			self.status = "Landed"
 
 		#collisions information
 		self.collision_l = []
@@ -90,7 +89,7 @@ class Aircraft(object):
 
 	def __str__(self):
 		"""String representation of the Aircraft class"""
-		return "[{:s}] ({:s}) {}".format(self.__class__.__name__, self.IATA,
+		return "[{:s}] ({:s}) {}".format(self.__class__.__name__, self.FlightID,
 										 self.__dict__)
 
 	def to_dict(self):
@@ -130,7 +129,8 @@ class Aircraft(object):
 	def collision(self, avion2):
 		"""detects a colision between 2 aircrafts"""
 		pos = 0
-		Airport.map_collisions = []
+		if (self.status == "Landed" or avion2.status == "Landed"):
+			return Airport.map_collisions
 		if (self.manifesto):
 			path1 = self.path
 			starting_point1 = self.current_path
@@ -159,53 +159,58 @@ class Aircraft(object):
 			vertical_distance = (element["altitude"] - path2[(starting_point2) + pos]["altitude"])
 			if (horizontal_distance < Aircraft.safety_horizontal) and (vertical_distance < Aircraft.safety_horizontal):
 				dic = {
-					"ID1": self.IATA,
-					"ID2": avion2.IATA,
+					"ID1": self.FlightID,
+					"ID2": avion2.FlightID,
 					"crash_time": element["time"], #needs to change to current time
 					"crash_latitude": (element["latitude"] + (element["latitude"] - path2[(starting_point2)  + pos]["latitude"]) / 2),
 					"crash_longitude": (element["longitude"] + (element["longitude"] - path2[(starting_point2) + pos]["longitude"]) / 2),
 					"crash_altitude": (element["altitude"] + (element["altitude"] - path2[(starting_point2) + pos]["altitude"]) / 2),
-					"crash_radious": horizontal_distance / 2
+					"crash_radious": horizontal_distance / 2,
+					"crash_id": self.FlightID + avion2.FlightID + element["time"],
+					"crash_id2": avion2.FlightID + self.FlightID + element["time"]
 				}
-				if dic not in Airport.map_collisions:
-					Airport.map_collisions.append(dic)
-				if dic not in self.collision_l:
-					self.collision_l.append(dic)
-				if dic not in avion2.collision_l:
-					avion2.collision_l.append(dic)
+				flag = 0
+				for elements in Airport.map_collisions:
+					if (dic["crash_id"] == elements["crash_id"]) or (dic["crash_id2"] == elements["crash_id"]):
+						flag = 1
+						break
+				if flag == 0:
+					Airport.map_collisions.append(copy.deepcopy(dic))
+					self.collision_l.append(copy.deepcopy(dic))
+					avion2.collision_l.append(copy.deepcopy(dic))
+					self.new_route()
 			pos += 1
-
-		return Airport.map_collisions
+		return self.collision_l
 
 	def all_collision(obj_list):
 		"""checks collision between all aircrafts"""
 		pos = 0
-		total_collisions = []
 		for plane in obj_list:
 			pos+=1
 			for plane2 in obj_list[pos:]:
-				total_collisions = total_collisions + plane.collision(plane2)
-		return total_collisions
+				plane.collision(plane2)
+		return Airport.map_collisions
 
-	def new_route(self, target):
+	def new_route(self, target=None):
 		"""Preliminar suggestion of deviating route based on altitude"""
-		self.create_estimated_flightpath(-1000)
-		self.collision(target)
-
-
+		self.suggested_flightpath = self.create_estimated_flightpath(-1000)
+		#self.collision(target)
 
 	#To create an estimated flightpath, an initial path list with current location and time is needed
 	def create_estimated_flightpath(self, altitude_to_descend=0):
 		"""Method that creates a preliminar route for a plane"""
 		flightpath = []
+		print(self.path)
+		print(self.current_path)
 		current_time = datetime.strptime(self.path[self.current_path]["time"], '%Y-%m-%dt%H:%M:%Sz')
-		current_time = current_time + timedelta(0, Aircraft.refresh_rate)
+		current_time = self.path[self.current_path]["time"] + timedelta(0, Aircraft.refresh_rate)
 		if altitude_to_descend == 0:
 			delta_altitude = 0
-		if altitude_to_descend > 0:
-			delta_altitude = 1000 / Aircraft.refresh_rate
 		else:
-			delta_altitude = -1000 / Aircraft.refresh_rate
+			if altitude_to_descend > 0:
+				delta_altitude = 1000 / Aircraft.refresh_rate
+			else:
+				delta_altitude = -1000 / Aircraft.refresh_rate
 
 		altitude_to_descend -= delta_altitude
 		next_location = self.point_ahead(self.path[self.current_path]["latitude"],
@@ -239,6 +244,10 @@ class Aircraft(object):
 			flightpath.append(copy.deepcopy(next_location))
 		self.estimated_flightpath = flightpath
 		return flightpath
+
+	def switch_manifesto(self):
+		"""switches between manifestos"""
+		self.manifesto = False
 
 	def point_ahead(self, lat, lon, truck, speed, time, altitude):
 		"""
