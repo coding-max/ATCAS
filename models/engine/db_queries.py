@@ -319,19 +319,13 @@ def get_path(flight_id=None):
         with open("././test_flights/{:}.json".format(flight_id), 'r') as f:
             return dict(json.load(f))
     except:
+        status_list = get_status(flight_id)
         dictionary = {
-            "Callsign": flight_id,
-
-            #This dictionary needs to be the current position and time of the flight
-            "Path": [
-                {
-                    "latitude": -30.064087,
-                    "longitude": -57.743427,
-                    "altitude": 37000,
-                    "speed": 453,
-                    "truck": 155,
-                    "time": "2021-10-12T22:54:30Z"
-                }
-            ]
+                    "time": status_list[0],
+                    "latitude": status_list[1],
+                    "longitude": status_list[2],
+                    "altitude": status_list[3],
+                    "truck": status_list[4],
+                    "speed": status_list[5],
         }
         return dictionary
