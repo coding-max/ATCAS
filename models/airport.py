@@ -18,13 +18,11 @@ class Airport():
 		self.id = airport_dict["IATA"]
 		self.ICAO = airport_dict["ICAO"]
 		self.name = airport_dict["name"]
-		self.city = airport_dict["city"]
-		self.country = airport_dict["country"]
-		self.latitude = airport_dict["latitude"]
-		self.longitude = airport_dict["longitude"]
 		self.arrivals = models.storage.airport_arrivals(args)
 		self.departure = models.storage.airport_departures(args)
 
+	def reload(self):
+		Airport.airplane_list = models.storage.all_ids()
 
 	def __str__(self):
 		"""String representation of the BaseModel class"""
@@ -43,6 +41,12 @@ class Airport():
 
 	def add_plane(self, avion):
 		"""adds plane to airspace"""
+	
+	def arrivals(self):
+		"""returns all arrivals from this airport"""
+
+	def departures(self):
+		"""returns all departures from this airport"""
 
 	def can_add(self, avion):
 		"""checks if a plane can be added to airspace"""
