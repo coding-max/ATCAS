@@ -101,11 +101,6 @@ class Aircraft(object):
 	def to_dict(self):
 		"""returns a dictionary containing all keys/values of the instance"""
 		new_dict = self.__dict__.copy()
-		if "type" in new_dict:
-			new_dict["type"] = new_dict["type"].strftime(time)
-		if "registration" in new_dict:
-			new_dict["registration"] = new_dict["registration"].strftime(time)
-		new_dict["__class__"] = self.__class__.__name__
 		return new_dict
 
 
@@ -217,7 +212,7 @@ class Aircraft(object):
 		"""Preliminar suggestion of deviating route based on altitude"""
 		self.suggested_flightpath = self.create_estimated_flightpath(-1000)
 		#self.collision(target)
-
+		
 	#To create an estimated flightpath, an initial path list with current location and time is needed
 	def create_estimated_flightpath(self, altitude_to_descend=0):
 		"""Method that creates a preliminar route for a plane"""
