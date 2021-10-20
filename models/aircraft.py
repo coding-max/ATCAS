@@ -249,7 +249,7 @@ class Aircraft(object):
 				delta_altitude = 0
 			else:
 				altitude_to_descend -= delta_altitude
-			current_time = current_time + timedelta(0, Aircraft.refresh_rate)
+			current_time = current_time + timedelta(0, 60 / Aircraft.refresh_rate)
 			next_location = self.point_ahead(next_location["latitude"],
 											 next_location["longitude"],
 											 self.path[self.current_path]["truck"],

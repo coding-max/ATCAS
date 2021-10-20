@@ -28,11 +28,13 @@ def flights():
         if plane not in Airport.mapped_planes:
             avion = Aircraft(str(plane))
             Airport.mapped_planes.append(plane)
-            avion.create_estimated_flightpath()
+            #avion.create_estimated_flightpath()
     for avion in Aircraft.plane_list:
         avion.update()
-            #Aircraft.all_collision(Aircraft.plane_list)
-   #Aircraft.all_collision(Aircraft.plane_list)
+        while (len(avion.estimated_flightpath) > 1):
+            avion.estimated_flightpath.remove(avion.estimated_flightpath[0])
+    #Aircraft.all_collision(Aircraft.plane_list)
+    #Aircraft.all_collision(Aircraft.plane_list)
     for avv in Aircraft.plane_list:
         ret.append(avv.to_dict())
     return jsonify(ret)
@@ -54,8 +56,8 @@ def new_route():
     ret = []
     for plane in Aircraft.plane_list:
         if len(plane.collision_l) != 0:
-            plane.suggested_flightpath = self.create_estimated_flightpath(-1000)
-            for positins in self.suggested_flightpath:
+            plane.suggested_flightpath = plane.create_estimated_flightpath(-1000)
+            for positions in plane.suggested_flightpath:
                 ret.append(positions.__dict__())
     return jsonify(ret)
 
