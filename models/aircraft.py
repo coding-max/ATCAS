@@ -71,16 +71,17 @@ class Aircraft(object):
 			self.manifesto = True
 		self.current_path = 0
 		try:
-			while (datetime.strptime(self.path[self.current_path]["time"], '%Y-%m-%dt%H:%M:%Sz') < datetime.now()):
+			while (datetime.strptime(self.path[self.current_path]["time"], '%Y-%m-%dt%H:%M:%Sz') -
+				   datetime.now() > timedelta(0, 60 / Aircraft.refresh_rate)):
 				try:
-					self.path[self.current_path["time"]]
+					self.path[self.current_path]["time"]
 				except:
-					self.status = "Landed"
+					self.status = "Outside Airspace"
 					break
 				self.current_path += 1
 			self.status = "On air"
 		except:
-			self.status = "Landed"
+			self.status = "Outside Airspace"
 
 		#collisions information
 		self.collision_l = []

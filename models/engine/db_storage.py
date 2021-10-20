@@ -76,8 +76,15 @@ class DBStorage:
 			"time": "6969",
 			"vertical_speed": "0",
 		}
-		lista_flightpath = [thisdict, thisdict, thisdict]"""
-
+		lista_flightpath = [thisdict, thisdict, thisdict]
+		lista_flightpath = [{
+			"time": "2021-10-29t23:59:30z",
+			"latitude": -30.540642,
+			"longitude": -57.541443,
+			"altitude": 37000,
+			"truck": 437,
+			"speed": 166,
+		}]"""
 		lista_flightpath = [querys.get_path(flight_id)]
 		return lista_flightpath
 
