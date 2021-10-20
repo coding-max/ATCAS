@@ -35,6 +35,7 @@ class ATCAScmd(cmd.Cmd):
 				if plane not in Airport.mapped_planes:
 					avion = Aircraft(str(plane))
 					Airport.mapped_planes.append(plane)
+					avion.create_estimated_flightpath()
 			return False
 		for pos in range(len(args)):
 			if (args[pos] not in Airport.airplane_list):
@@ -67,7 +68,7 @@ class ATCAScmd(cmd.Cmd):
 				print(obj)
 		if len(args) == 1:
 			for obj in Aircraft.plane_list:
-				if str(obj.FlightID)  == str(args[0]):
+				if str(obj.FlightID) == str(args[0]):
 					print(obj)
 
 	#this method creates an instance of a new airport, each time it tryes to print it
@@ -83,13 +84,18 @@ class ATCAScmd(cmd.Cmd):
 	def do_update(self, arg):
 		"""updates the current location and time of a given aircraft"""
 		args = arg.split()
+		pos = 0
 		if len(args) == 0:
-			print("missing ID")
+			while (Aircraft.plane_list[pos]):
+				pos += Aircraft.plane_list[pos].update()
+				try:
+					Aircraft.plane_list[pos]
+				except:
+					break
 		if len(args) == 1:
 			for obj in Aircraft.plane_list:
 				if str(obj.FlightID)  == str(args[0]):
 					obj.update()
-					print(obj)
 		
 	#this method breaks the list generated of collisions, double imput
 	def do_collision(self, arg):
