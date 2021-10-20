@@ -122,7 +122,7 @@ class ATCAScmd(cmd.Cmd):
 
 	def do_allcollisions(self, arg):
 		"""checks collisions between all aicrafts"""
-		#allcollision_list = Aircraft.all_collision(Aircraft.plane_list)
+		Aircraft.all_collision(Aircraft.plane_list)
 		allcollision_list = Airport.map_collisions
 		for elem in allcollision_list:
 			#arcoseno = math.acos(float(elem["crash_longitude"] / 111319.444))

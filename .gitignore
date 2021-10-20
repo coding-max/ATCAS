@@ -8,3 +8,4 @@ paths/*
 others/*
 map.py
 config.json
+config*
