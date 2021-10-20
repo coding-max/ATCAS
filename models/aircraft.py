@@ -71,7 +71,8 @@ class Aircraft(object):
 			self.manifesto = True
 		self.current_path = 0
 		try:
-			while (datetime.strptime(self.path[self.current_path]["time"], '%Y-%m-%dt%H:%M:%Sz') < datetime.now()):
+			while (datetime.strptime(self.path[self.current_path]["time"], '%Y-%m-%dt%H:%M:%Sz') -
+				   datetime.now() > timedelta(0, 60 / Aircraft.refresh_rate)):
 				try:
 					self.path[self.current_path]["time"]
 				except:
