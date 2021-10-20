@@ -8,6 +8,7 @@ import pymysql
 import requests
 import time
 from datetime import datetime, timedelta
+import models
 from models.engine import db_queries
 
 
@@ -25,17 +26,11 @@ with open('./config.json', 'r') as config_file:
 
 def run_radar():
     """ """
-    pichu = 0
-    while (1):
-        if pichu < 10:
-            print("-------------------------- [{}] --------------------------".format(pichu))
-        else:
-            print("-------------------------- [{}] -------------------------".format(pichu))
-        pichu += 1
-        get_flights()
-        print("---------------------------------------------------------")
-        time.sleep(15)
-        print("\n")
+    print("---------------------------------------------------------")
+    get_flights()
+    time.sleep(15)
+    print("")
+    run_radar()
 
 
 def custom_time():
@@ -141,7 +136,7 @@ def get_flight_data(flight_id):
         flight_data.append(api_response['data'][0]['arrival']['scheduled'])
     else:
         #the api does not return information about the given flight
-        print("no data was obtained")
+        print("No data was obtained")
     return (flight_data)
 
 

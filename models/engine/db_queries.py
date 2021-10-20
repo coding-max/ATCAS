@@ -210,7 +210,6 @@ def insert_flights(id, iata, icao):
                      VALUES ("{}", "{}", "{}")'.format(id, iata, icao)
             cursor.execute(query)
         connection.commit()
-        print("-->Flight added to the database")
     except Error as e:
         print(e)
 
@@ -226,7 +225,6 @@ def insert_flightstatus(id, lat, lon, alt, trk, spd, time):
                         VALUES ("{}", {}, {}, {}, {}, {}, "{}")'.format(id, lat, lon, alt, trk, spd, time)
             cursor.execute(query)
         connection.commit()
-        print("-->Status added to the database")
     except Error as e:
         print(e)
 
@@ -242,7 +240,6 @@ def insert_aircraft(id, type, reg, airline):
                      VALUES ("{}", "{}", "{}", "{}")'.format(id, type, reg, airline)
             cursor.execute(query)
         connection.commit()
-        print("-->Aircraft added to the database")
     except Error as e:
         print(e)
 
@@ -258,7 +255,6 @@ def insert_airport(iata, icao, name):
                      VALUES ("{}", "{}", "{}")'.format(iata, icao, name)
             cursor.execute(query)
         connection.commit()
-        print("-->Airport added to the database")
     except Error as e:
         print(e)
 
@@ -274,7 +270,6 @@ def insert_departure(id, iata, time):
                      VALUES ("{}", "{}", "{}")'.format(id, iata, time)
             cursor.execute(query)
         connection.commit()
-        print("-->Departure added to the database")
     except Error as e:
         print(e)
 
@@ -290,7 +285,6 @@ def insert_arrival(id, iata, time):
                      VALUES ("{}", "{}", "{}")'.format(id, iata, time)
             cursor.execute(query)
         connection.commit()
-        print("-->Arrival added to the database")
     except Error as e:
         print(e)
 
