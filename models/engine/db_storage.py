@@ -34,28 +34,52 @@ class DBStorage:
 			ex: ["id": 7439395, "type": 747-800, etc...]
 		"""
 		flight = querys.get_flight(flight_id)
-		aircraft_data = {
-			"FlightID": flight[0],
-			"IATA": flight[1],
-			"ICAO": flight[2],
+		try:
+			aircraft_data = {
+				"FlightID": flight[0],
+				"IATA": flight[1],
+				"ICAO": flight[2],
 
-			#Aircaft data
-			"type": flight[3],
-			"registration": flight[4],
-			"airline": flight[5],
+				#Aircaft data
+				"type": flight[3],
+				"registration": flight[4],
+				"airline": flight[5],
 
-			#Departure data
-			"departure_IATA": flight[6],
-			"departure_ICAO": flight[7],
-			"departure_airport": flight[8],
-			"departure_time": flight[9],
+				#Departure data
+				"departure_IATA": flight[6],
+				"departure_ICAO": flight[7],
+				"departure_airport": flight[8],
+				"departure_time": flight[9],
 
-			#Arrival data
-			"arrival_IATA": flight[10],
-			"arrival_ICAO": flight[11],
-			"arrival_airport": flight[12],
-			"arrival_time": flight[13]
-		}
+				#Arrival data
+				"arrival_IATA": flight[10],
+				"arrival_ICAO": flight[11],
+				"arrival_airport": flight[12],
+				"arrival_time": flight[13]
+			}
+		except:
+			aircraft_data = {
+				"FlightID": flight_id,
+				"IATA": "",
+				"ICAO": "",
+
+				#Aircaft data
+				"type": "",
+				"registration": "",
+				"airline": "",
+
+				#Departure data
+				"departure_IATA": "",
+				"departure_ICAO": "",
+				"departure_airport": "",
+				"departure_time": "",
+
+				#Arrival data
+				"arrival_IATA": "",
+				"arrival_ICAO": "",
+				"arrival_airport": "",
+				"arrival_time": ""
+			}
 		return aircraft_data
 	
 	def aircraft_query_update(self, flight_id=None):
@@ -85,18 +109,19 @@ class DBStorage:
 			"truck": 437,
 			"speed": 166,
 		}]"""
+		"""
 		dic = {
 			"time": "2021-10-20t23:54:30z",
-			"latitude": -32.964087,
-			"longitude": -57.43427,
+			"latitude": -33.98713235069995,
+			"longitude": -58.70534826628892,
 			"altitude": 37000,
 			"truck": 45,
 			"speed": 500,
 		}
-
+		"""
 		lista_flightpath = [querys.get_path(flight_id)]
-		#return lista_flightpath
-		return [dic]
+		return lista_flightpath
+		#return [dic]
 
 	def airport_query(self, IATA):
 		"""
