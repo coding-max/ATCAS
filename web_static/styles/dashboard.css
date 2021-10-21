@@ -7,6 +7,9 @@
   .map {
     height: 82vh;
   }
+  .ol-layer {
+    box-shadow: darkgray;
+  }
   .brand {
     width: 7rem;
   }
@@ -88,7 +91,7 @@
   }
   
   .list-group-item.active {
-    background-color: transparent;
+    background-color: #9ec3f7 !important;
     color: var(--main-text-color);
     font-weight: bold;
     border: none;
