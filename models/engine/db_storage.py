@@ -85,8 +85,18 @@ class DBStorage:
 			"truck": 437,
 			"speed": 166,
 		}]"""
+		dic = {
+			"time": "2021-10-20t23:54:30z",
+			"latitude": -32.964087,
+			"longitude": -57.43427,
+			"altitude": 37000,
+			"truck": 45,
+			"speed": 500,
+		}
+
 		lista_flightpath = [querys.get_path(flight_id)]
-		return lista_flightpath
+		#return lista_flightpath
+		return [dic]
 
 	def airport_query(self, IATA):
 		"""

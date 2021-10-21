@@ -5,6 +5,7 @@ Contains class Airacft
 
 import models
 import copy
+import json
 import numpy as np
 from models.airport import Airport
 from math import radians, cos, sin, asin, sqrt, pow, atan2, pi
@@ -71,15 +72,16 @@ class Aircraft(object):
 			self.manifesto = True
 		self.current_path = 0
 		try:
-			while (datetime.strptime(self.path[self.current_path]["time"], '%Y-%m-%dt%H:%M:%Sz') -
+			wpa = 0
+			while (datetime.strptime(self.path[wpa]["time"], '%Y-%m-%dt%H:%M:%Sz') -
 				   datetime.now() > timedelta(0, 60 / Aircraft.refresh_rate)):
 				try:
 					self.path[self.current_path]["time"]
+					self.status = "On air"
 				except:
 					self.status = "Outside Airspace"
 					break
-				self.current_path += 1
-			self.status = "On air"
+				wpa += 1
 		except:
 			self.status = "Outside Airspace"
 
@@ -103,6 +105,17 @@ class Aircraft(object):
 		new_dict = self.__dict__.copy()
 		return new_dict
 
+	def to_geojson(self):
+		"""converts aircraft object to geojson serializable"""
+		geojson ={
+			"type": "Feature",
+			"geometry" : {
+				"type": "Point",
+				"coordinates": [self.path[0]["longitude"], self.path[0]["latitude"]],
+				},
+			"properties" : self.to_dict(),
+		}
+		return geojson
 
 	def update(self):
 		"""update all information of aircraft"""
@@ -210,13 +223,14 @@ class Aircraft(object):
 
 	def new_route(self, target=None):
 		"""Preliminar suggestion of deviating route based on altitude"""
-		self.suggested_flightpath = self.create_estimated_flightpath(-1000)
+		self.suggested_flightpath = self.create_estimated_flightpath(-2000)
 		#self.collision(target)
 		
 	#To create an estimated flightpath, an initial path list with current location and time is needed
 	def create_estimated_flightpath(self, altitude_to_descend=0):
 		"""Method that creates a preliminar route for a plane"""
 		flightpath = []
+		print(self.current_path)
 		current_time = datetime.strptime(self.path[self.current_path]["time"], '%Y-%m-%dt%H:%M:%Sz')
 		current_time = current_time + timedelta(0, 60 / Aircraft.refresh_rate)
 		if altitude_to_descend == 0:
@@ -246,7 +260,7 @@ class Aircraft(object):
 				or ((next_location["latitude"] > -31.40 and next_location["latitude"] < -30.75) and (next_location["longitude"] > -56.00 and next_location["longitude"] < -54.80))):
 
 			if (altitude_to_descend > -500) and (altitude_to_descend < 500):
-				delta_altitude = 0
+				delta_altitude = altitude_to_descend
 			else:
 				altitude_to_descend -= delta_altitude
 			current_time = current_time + timedelta(0, 60 / Aircraft.refresh_rate)
@@ -292,3 +306,10 @@ class Aircraft(object):
 			"time": time
 		}
 		return final_point
+
+	def accept_route(self):
+		"""accepts routes and deploys thems to testing jsons"""
+		self.suggested_flightpath = self.create_estimated_flightpath(-1000)
+		data = json.dumps(self.suggested_flightpath)
+		with open("{:}.json".format(self.FlightID), "w") as f:
+			json.dump(data, f)

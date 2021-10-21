@@ -167,21 +167,9 @@ class ATCAScmd(cmd.Cmd):
 	#method used for tests
 	def do_test(self, arg):
 		""""method for testing"""
-		Aircraft("TK6169")
-		Aircraft("CM369")
-		Aircraft("IB6012")
-		plane = Aircraft.plane_list[0]
-		plane2 = Aircraft.plane_list[1]
-		plane3 = Aircraft.plane_list[2]
-		Aircraft.all_collision(Aircraft.plane_list)
-		for elem in plane.collision_l:
-			print(elem)
-		for elem in plane2.collision_l:
-			print(elem)
-		for elem in plane3.collision_l:
-			print(elem)
-		print(Airport.map_collisions)
-
+		plane = Aircraft("E480D1")
+		print(plane.to_geojson())
+		#plane.accept_route()
 
 if __name__ == '__main__':
     ATCAScmd().cmdloop()

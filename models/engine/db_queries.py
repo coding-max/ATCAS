@@ -29,10 +29,12 @@ def get_flights_ids():
         query = 'SELECT Id FROM Flights'
         cur.execute(query)
         flights = cur.fetchall()
+        print(flights)
         flights_list = []
         if len(flights) > 0:
             for flight in flights:
                 flights_list.append(flight[0])
+        print(flights_list)
         return flights_list
 
 
