@@ -1,6 +1,6 @@
 # !/usr/bin/env python
 """
-Database storage module, contains all queries to the database.
+This module contains all the queries that interact (read and write) with the ATCAS database.
 """
 
 import pymysql
@@ -8,7 +8,7 @@ import json
 
 
 def connect():
-    """ """
+    """Load credentials from 'config.json' file to make the connection to the database"""
     with open('././config.json', 'r') as config:
         credentials = dict(json.load(config))["db_credentials"]
         host = credentials['host']
@@ -19,10 +19,7 @@ def connect():
 
 
 def get_flights_ids():
-    """
-    Make a query to the database to obtain the Id (IATA code) of the flights in the airspace
-    Returns a list with IATA code of all flights in the airspace
-    """
+    """Returns a list that contains the IDs of all flights in the database"""
     connection = connect()
     with connection:
         cur = connection.cursor()
@@ -39,11 +36,7 @@ def get_flights_ids():
 
 
 def get_flight(flight_id):
-    """
-    Make a query to the database to obtain the data of the flights in the airspace.
-    If no parameter is passed, returns the data of all the flights in the database.
-    If the id (IATA code) of a flight is passed as a parameter, it returns all the data related to that specific flight.
-    """
+    """Returns a tuple that contains all the information related to the flight ID passed as a parameter"""
     connection = connect()
     with connection:
         cur = connection.cursor()
@@ -61,8 +54,7 @@ def get_flight(flight_id):
 
 
 def get_airports():
-    """
-    """
+    """Returns a list that contains the IATA codes of all airports in the database"""
     connection = connect()
     with connection:
         cur = connection.cursor()
@@ -77,10 +69,8 @@ def get_airports():
 
 
 def get_airport(IATA_code):
-    """
-    Make a query to the database to obtain information about a given Airport
-    Takes the ICAO code of the airport as a parameter and returns a list with information releated with that airport
-    """
+    """Returns a tuple that contains all the information related to a given airport,
+       It is required to pass the airport's IATA code as a parameter"""
     connection = connect()
     with connection:
         cur = connection.cursor()
@@ -90,11 +80,8 @@ def get_airport(IATA_code):
 
 
 def get_departures(IATA_code):
-    """
-    Make a query to the database to obtain information about departures for a given Airport
-    Takes the ICAO code of the airport as a parameter and
-    returns a list with information of all departures scheduled to that airport.
-    """
+    """Returns a tuple that contains all scheduled departures from a given airport,
+       It is required to pass the airport's IATA code as a parameter""" 
     connection = connect()
     with connection:
         cur = connection.cursor()
@@ -107,11 +94,8 @@ def get_departures(IATA_code):
 
 
 def get_arrivals(IATA_code):
-    """
-    Make a query to the database to obtain information about arrivals for a given Airport
-    Takes the ICAO code of the airport as a parameter and
-    returns a list with information of all arrivals scheduled to that airport.
-    """
+    """Returns a tuple that contains all scheduled arrivals from a given airport,
+       It is required to pass the airport's IATA code as a parameter""" 
     connection = connect()
     with connection:
         cur = connection.cursor()
@@ -124,21 +108,21 @@ def get_arrivals(IATA_code):
 
 
 def get_status(flight_id):
-    """
-    """
+    """Returns the most recent position information for a given flight,
+       It is required to pass the flight ID as a parameter"""
     connection = connect()
     with connection:
         cur = connection.cursor()
         query = 'SELECT Time, Latitude, Longitude, Altitude, Truck, Speed FROM FlightStatus WHERE Id = "{}"\
-                    ORDER BY IndexId DESC LIMIT 1'.format(flight_id)
+                 ORDER BY IndexId DESC LIMIT 1'.format(flight_id)
         cur.execute(query)
         status = cur.fetchone()
         return status
 
 
 def get_status_list(flight_id):
-    """
-    """
+    """Returns all position history for a given flight,
+       It is required to pass the flight ID as a parameter"""
     connection = connect()
     with connection:
         cur = connection.cursor()
@@ -148,9 +132,8 @@ def get_status_list(flight_id):
 
 
 def add_flight_to_db(flight, flight_data):
-    """
-    Make a query to the database...
-    """
+    """Add a flight to the database,
+       It consists of adding all the information collected from both APIs"""
     id = flight[2]
     lat = flight[5]
     if lat == '':
@@ -202,9 +185,10 @@ def add_flight_to_db(flight, flight_data):
 
 
 def insert_flights(id, iata, icao):
-    """
-    Make a query to the database...
-    """
+    """Adds a new row to the database's 'Flights' table
+       where is stored the data that identifies the flight.
+       The flight's ID, ICAO and IATA code are required,
+       <id> must be non-empty string, <iata> and <icao> can be empty strings"""
     try:
         connection = connect()
         with connection.cursor() as cursor:
@@ -217,9 +201,8 @@ def insert_flights(id, iata, icao):
 
 
 def insert_flightstatus(id, lat, lon, alt, trk, spd, time):
-    """
-    Make a query to the database...
-    """
+    """Adds a new row to the database's 'FlightStatus' table
+       where is stored flight's position information"""
     try:
         connection = connect()
         with connection.cursor() as cursor:
@@ -232,9 +215,8 @@ def insert_flightstatus(id, lat, lon, alt, trk, spd, time):
 
 
 def insert_aircraft(id, type, reg, airline):
-    """
-    Make a query to the database...
-    """
+    """Adds a new row to the database's 'Aircrafts' table
+       where is stored flight's aircraft information"""
     try:
         connection = connect()
         with connection.cursor() as cursor:
@@ -247,9 +229,8 @@ def insert_aircraft(id, type, reg, airline):
 
 
 def insert_airport(iata, icao, name):
-    """
-    Make a query to the database...
-    """
+    """Adds a new row to the database's 'Airports' table
+       where is stored the airport's identification data"""
     try:
         connection = connect()
         with connection.cursor() as cursor:
@@ -262,9 +243,8 @@ def insert_airport(iata, icao, name):
 
 
 def insert_departure(id, iata, time):
-    """
-    Make a query to the database...
-    """
+    """Adds a new row to the database's 'Departures' table
+       where is stored the flight's departures data"""
     try:
         connection = connect()
         with connection.cursor() as cursor:
@@ -277,9 +257,8 @@ def insert_departure(id, iata, time):
 
 
 def insert_arrival(id, iata, time):
-    """
-    Make a query to the database...
-    """
+    """Adds a new row to the database's 'Departures' table
+       where is stored the flight's arrivals data"""
     try:
         connection = connect()
         with connection.cursor() as cursor:
@@ -291,9 +270,10 @@ def insert_arrival(id, iata, time):
         print(e)
 
 
+#todo: this function is obsolete, it performs the same function as "insert_flightstatus". Remove the calls to this function and replace them with a call to "insert_flightstatus".
 def update_status(flight):
-    """
-    """
+    """Adds a new row to the database's 'FlightStatus' table
+       where is stored flight's position information"""
     for i in range(5, 9):
         if flight[i] == '':
             flight[i] = -1
@@ -308,8 +288,6 @@ def update_status(flight):
         print(e)
 
 
-#todo -> replace the way the flight path is loaded
-    #method used for development purposes
 def get_path(flight_id=None):
     try:
         with open("././test_flights/{:}.json".format(flight_id), 'r') as f:
