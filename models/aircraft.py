@@ -107,13 +107,27 @@ class Aircraft(object):
 
 	def to_geojson(self):
 		"""converts aircraft object to geojson serializable"""
-		geojson ={
-			"type": "Feature",
-			"geometry" : {
-				"type": "Point",
-				"coordinates": [self.path[0]["longitude"], self.path[0]["latitude"]],
+		
+		geojson = {
+			"type": "FeatureCollection",
+			"features": [
+			{
+				"type": "Feature",
+				"geometry" : {
+						"type": "Point",
+						"coordinates": [self.path[0]["longitude"], self.path[0]["latitude"]],
 				},
-			"properties" : self.to_dict(),
+				"properties" : self.to_dict(),
+			},
+			{
+				"type": "Feature",
+				"geometry" : {
+					"type": "Point",
+					"coordinates": [self.estimated_flightpath[1]["longitude"], self.estimated_flightpath[1]["latitude"]],
+				},
+				"properties" : {},
+			}
+			]
 		}
 		return geojson
 
