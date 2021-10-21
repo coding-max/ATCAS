@@ -15,7 +15,7 @@ from models.aircraft import Aircraft
 def create_airport():
     """returns information about the current working airport"""
     airport = Airport("MVD").to_dict()
-    airport = Aircraft.plane_list
+    #airport = Aircraft.plane_list
     return jsonify(airport)
 
 
@@ -33,7 +33,7 @@ def flights():
         while (len(avion.estimated_flightpath) > 2):
             avion.estimated_flightpath.remove(avion.estimated_flightpath[1])
     for avv in Aircraft.plane_list:
-        ret.append(avv.to_dict())
+        ret.append(avv.to_geojson())
     return jsonify(ret)
 
 
@@ -44,7 +44,7 @@ def collitions():
     Aircraft.all_collision(Aircraft.plane_list)
     allcollision_list = Airport.map_collisions
     for elem in allcollision_list:
-        ret.append(elem.to_dict())
+        ret.append(elem.to_geojson())
     return jsonify(ret)
 
 
