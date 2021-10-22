@@ -242,7 +242,6 @@ class Aircraft(object):
 	def create_estimated_flightpath(self, altitude_to_descend=0):
 		"""Method that creates a preliminar route for a plane"""
 		flightpath = []
-		print(self.current_path)
 		current_time = datetime.strptime(self.path[self.current_path]["time"], '%Y-%m-%dt%H:%M:%Sz')
 		current_time = current_time + timedelta(0, 60 / Aircraft.refresh_rate)
 		if altitude_to_descend == 0:
