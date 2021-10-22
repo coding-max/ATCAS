@@ -33,7 +33,7 @@ def flights():
         while (len(avion.estimated_flightpath) > 2):
             avion.estimated_flightpath.remove(avion.estimated_flightpath[1])
     for avv in Aircraft.plane_list:
-        ret.append(avv.to_geojson())
+        ret.append(avv.to_dict())
     return jsonify(ret)
 
 
@@ -44,7 +44,7 @@ def collitions():
     Aircraft.all_collision(Aircraft.plane_list)
     allcollision_list = Airport.map_collisions
     for elem in allcollision_list:
-        ret.append(elem.to_geojson())
+        ret.append(elem.to_dict())
     return jsonify(ret)
 
 

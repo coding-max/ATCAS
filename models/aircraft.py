@@ -198,7 +198,9 @@ class Aircraft(object):
 			c = 2 * asin(sqrt(a)) 
 			r = 6371
 			horizontal_distance = c * r * 1000
-			vertical_distance = (element["altitude"] - path2[(starting_point2) + pos]["altitude"])
+			vertical_distance = abs(element["altitude"] - path2[(starting_point2) + pos]["altitude"])
+			print(vertical_distance)
+			print(horizontal_distance)
 			if (horizontal_distance < Aircraft.safety_horizontal) and (vertical_distance < Aircraft.safety_horizontal):
 				dic = {
 					"ID1": self.FlightID,
@@ -227,6 +229,7 @@ class Aircraft(object):
 	def all_collision(obj_list):
 		"""checks collision between all aircrafts"""
 		pos = 0
+		Airport.map_collisions = []
 		for plane in obj_list:
 			pos+=1
 			for plane2 in obj_list[pos:]:
@@ -287,7 +290,7 @@ class Aircraft(object):
 
 	def switch_manifesto(self):
 		"""switches between manifestos"""
-		self.manifesto = False
+		#self.manifesto = False
 
 	def point_ahead(self, lat, lon, truck, speed, time, altitude):
 		"""

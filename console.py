@@ -142,8 +142,9 @@ class ATCAScmd(cmd.Cmd):
 			if str(obj.FlightID)  == str(args[0]):
 				avion1 = obj
 		if avion1 is not None:
+			print(avion1.suggested_flightpath)
 			print(avion1.collision_l) #if self.new_route(self):
-		
+
 	def do_fids(self, arg):
 		"""prints a list of all airplanes available for creadtion"""
 		Airport.airplane_list = models.storage.all_ids()
@@ -156,11 +157,21 @@ class ATCAScmd(cmd.Cmd):
 			for avion in Aircraft.plane_list:
 				if len(avion.suggested_flightpath) > 0:
 					avion.switch_manifesto()
-					avion.suggested_flightpath = []
+					avion.suggested_flightpath = []				
 		else:
 			for avion in Aircraft.plane_list:
 				if str(avion.FlightID) == str(args[0]):
 					if len(avion.suggested_flightpath) > 0:
+						if (avion.FlightID == "IB420"):
+							doc = "420"
+						elif (avion.FlightID == "IB969"):
+							doc = "969"
+						else:
+							print("**Wrong FlightID, run fids for valid ones**")
+							return False
+						print("llegue")
+						with open("././test_flights/{:}.json".format(doc), 'w') as f:
+							json.dump("changed", f)
 						avion.switch_manifesto()
 						avion.suggested_flightpath = []
 
