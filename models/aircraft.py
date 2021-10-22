@@ -188,6 +188,7 @@ class Aircraft(object):
 		for element in path1[starting_point1:]:
 			if (len(path2) <= (starting_point2 + pos)):
 				break
+			#Formula to calculate point in a determined distance and angle
 			lat1 = radians(element["latitude"])
 			lat2 = radians(path2[(starting_point2) + pos]["latitude"])
 			lon1 = radians(element["longitude"])
@@ -195,20 +196,18 @@ class Aircraft(object):
 			dlon = lon2 - lon1 
 			dlat = lat2 - lat1 
 			a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
-			c = 2 * asin(sqrt(a)) 
+			c = 2 * asin(sqrt(a))
 			r = 6371
 			horizontal_distance = c * r * 1000
 			vertical_distance = abs(element["altitude"] - path2[(starting_point2) + pos]["altitude"])
-			print(vertical_distance)
-			print(horizontal_distance)
-			if (horizontal_distance < Aircraft.safety_horizontal) and (vertical_distance < Aircraft.safety_horizontal):
+			if (horizontal_distance < Aircraft.safety_horizontal) and (vertical_distance < Aircraft.safety_vertical):
 				dic = {
 					"ID1": self.FlightID,
 					"ID2": avion2.FlightID,
-					"crash_time": element["time"], #needs to change to current time
+					"crash_time": element["time"],
 					"crash_latitude": (element["latitude"] + (element["latitude"] - path2[(starting_point2)  + pos]["latitude"]) / 2),
 					"crash_longitude": (element["longitude"] + (element["longitude"] - path2[(starting_point2) + pos]["longitude"]) / 2),
-					"crash_altitude": (element["altitude"] + (element["altitude"] - path2[(starting_point2) + pos]["altitude"]) / 2),
+					"crash_altitude": (element["altitude"] - (element["altitude"] - path2[(starting_point2) + pos]["altitude"]) / 2),
 					"crash_radious": horizontal_distance / 2,
 					"crash_id": self.FlightID + avion2.FlightID + element["time"],
 					"crash_id2": avion2.FlightID + self.FlightID + element["time"]
@@ -233,6 +232,8 @@ class Aircraft(object):
 		for plane in obj_list:
 			pos+=1
 			for plane2 in obj_list[pos:]:
+				plane.collision_l = []
+				plane2.collision_l = []
 				plane.collision(plane2)
 		return Airport.map_collisions
 

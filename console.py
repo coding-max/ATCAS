@@ -122,6 +122,7 @@ class ATCAScmd(cmd.Cmd):
 
 	def do_allcollisions(self, arg):
 		"""checks collisions between all aicrafts"""
+		ATCAScmd.do_update("", "")
 		Aircraft.all_collision(Aircraft.plane_list)
 		allcollision_list = Airport.map_collisions
 		for elem in allcollision_list:
@@ -167,13 +168,18 @@ class ATCAScmd(cmd.Cmd):
 						elif (avion.FlightID == "IB969"):
 							doc = "969"
 						else:
-							print("**Wrong FlightID, run fids for valid ones**")
+							avion.suggested_flightpath = []
 							return False
-						print("llegue")
 						with open("././test_flights/{:}.json".format(doc), 'w') as f:
 							json.dump("changed", f)
 						avion.switch_manifesto()
 						avion.suggested_flightpath = []
+						print("**Instructions given, awaiting for pilot to obey**")
+						return False
+					else:
+						print("**Flight {:}, has no suggested flightpath**".format(avion.FlightID))
+						return False
+			print("**Wrong FlightID, run fids for valid ones**")
 
 	#method used for tests
 	def do_test(self, arg):
