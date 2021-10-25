@@ -15,7 +15,7 @@ from models.aircraft import Aircraft
 def create_airport():
     """returns information about the current working airport"""
     airport = Airport("MVD").to_dict()
-    airport = Aircraft.plane_list
+    #airport = Aircraft.plane_list
     return jsonify(airport)
 
 

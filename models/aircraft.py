@@ -5,6 +5,7 @@ Contains class Airacft
 
 import models
 import copy
+import json
 import numpy as np
 from models.airport import Airport
 from math import radians, cos, sin, asin, sqrt, pow, atan2, pi
@@ -70,18 +71,17 @@ class Aircraft(object):
 		else:
 			self.manifesto = True
 		self.current_path = 0
-		try:
-			while (datetime.strptime(self.path[self.current_path]["time"], '%Y-%m-%dt%H:%M:%Sz') -
-				   datetime.now() > timedelta(0, 60 / Aircraft.refresh_rate)):
-				try:
-					self.path[self.current_path]["time"]
-				except:
-					self.status = "Outside Airspace"
-					break
-				self.current_path += 1
-			self.status = "On air"
-		except:
-			self.status = "Outside Airspace"
+		wpa = 0
+		while (datetime.strptime(self.path[wpa]["time"], '%Y-%m-%dt%H:%M:%Sz') -
+				datetime.now() > timedelta(0, 60 / Aircraft.refresh_rate)):
+			try:
+				self.path[self.current_path]["time"]
+				self.status = "On air"
+			except:
+				self.status = "Outside Airspace"
+				break
+			wpa += 1
+		self.status = "Outside Airspace"
 
 		#collisions information
 		self.collision_l = []
@@ -103,6 +103,31 @@ class Aircraft(object):
 		new_dict = self.__dict__.copy()
 		return new_dict
 
+	def to_geojson(self):
+		"""converts aircraft object to geojson serializable"""
+		
+		geojson = {
+			"type": "FeatureCollection",
+			"features": [
+			{
+				"type": "Feature",
+				"geometry" : {
+						"type": "Point",
+						"coordinates": [self.path[0]["longitude"], self.path[0]["latitude"]],
+				},
+				"properties" : self.to_dict(),
+			},
+			{
+				"type": "Feature",
+				"geometry" : {
+					"type": "Point",
+					"coordinates": [self.estimated_flightpath[1]["longitude"], self.estimated_flightpath[1]["latitude"]],
+				},
+				"properties" : {},
+			}
+			]
+		}
+		return geojson
 
 	def update(self):
 		"""update all information of aircraft"""
@@ -163,6 +188,7 @@ class Aircraft(object):
 		for element in path1[starting_point1:]:
 			if (len(path2) <= (starting_point2 + pos)):
 				break
+			#Formula to calculate point in a determined distance and angle
 			lat1 = radians(element["latitude"])
 			lat2 = radians(path2[(starting_point2) + pos]["latitude"])
 			lon1 = radians(element["longitude"])
@@ -170,18 +196,18 @@ class Aircraft(object):
 			dlon = lon2 - lon1 
 			dlat = lat2 - lat1 
 			a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
-			c = 2 * asin(sqrt(a)) 
+			c = 2 * asin(sqrt(a))
 			r = 6371
 			horizontal_distance = c * r * 1000
-			vertical_distance = (element["altitude"] - path2[(starting_point2) + pos]["altitude"])
-			if (horizontal_distance < Aircraft.safety_horizontal) and (vertical_distance < Aircraft.safety_horizontal):
+			vertical_distance = abs(element["altitude"] - path2[(starting_point2) + pos]["altitude"])
+			if (horizontal_distance < Aircraft.safety_horizontal) and (vertical_distance < Aircraft.safety_vertical):
 				dic = {
 					"ID1": self.FlightID,
 					"ID2": avion2.FlightID,
-					"crash_time": element["time"], #needs to change to current time
+					"crash_time": element["time"],
 					"crash_latitude": (element["latitude"] + (element["latitude"] - path2[(starting_point2)  + pos]["latitude"]) / 2),
 					"crash_longitude": (element["longitude"] + (element["longitude"] - path2[(starting_point2) + pos]["longitude"]) / 2),
-					"crash_altitude": (element["altitude"] + (element["altitude"] - path2[(starting_point2) + pos]["altitude"]) / 2),
+					"crash_altitude": (element["altitude"] - (element["altitude"] - path2[(starting_point2) + pos]["altitude"]) / 2),
 					"crash_radious": horizontal_distance / 2,
 					"crash_id": self.FlightID + avion2.FlightID + element["time"],
 					"crash_id2": avion2.FlightID + self.FlightID + element["time"]
@@ -202,15 +228,18 @@ class Aircraft(object):
 	def all_collision(obj_list):
 		"""checks collision between all aircrafts"""
 		pos = 0
+		Airport.map_collisions = []
 		for plane in obj_list:
 			pos+=1
 			for plane2 in obj_list[pos:]:
+				plane.collision_l = []
+				plane2.collision_l = []
 				plane.collision(plane2)
 		return Airport.map_collisions
 
 	def new_route(self, target=None):
 		"""Preliminar suggestion of deviating route based on altitude"""
-		self.suggested_flightpath = self.create_estimated_flightpath(-1000)
+		self.suggested_flightpath = self.create_estimated_flightpath(-2000)
 		#self.collision(target)
 		
 	#To create an estimated flightpath, an initial path list with current location and time is needed
@@ -246,7 +275,7 @@ class Aircraft(object):
 				or ((next_location["latitude"] > -31.40 and next_location["latitude"] < -30.75) and (next_location["longitude"] > -56.00 and next_location["longitude"] < -54.80))):
 
 			if (altitude_to_descend > -500) and (altitude_to_descend < 500):
-				delta_altitude = 0
+				delta_altitude = altitude_to_descend
 			else:
 				altitude_to_descend -= delta_altitude
 			current_time = current_time + timedelta(0, 60 / Aircraft.refresh_rate)
@@ -262,7 +291,7 @@ class Aircraft(object):
 
 	def switch_manifesto(self):
 		"""switches between manifestos"""
-		self.manifesto = False
+		#self.manifesto = False
 
 	def point_ahead(self, lat, lon, truck, speed, time, altitude):
 		"""
@@ -292,3 +321,10 @@ class Aircraft(object):
 			"time": time
 		}
 		return final_point
+
+	def accept_route(self):
+		"""accepts routes and deploys thems to testing jsons"""
+		self.suggested_flightpath = self.create_estimated_flightpath(-1000)
+		data = json.dumps(self.suggested_flightpath)
+		with open("{:}.json".format(self.FlightID), "w") as f:
+			json.dump(data, f)
