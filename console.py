@@ -181,6 +181,17 @@ class ATCAScmd(cmd.Cmd):
 						return False
 			print("**Wrong FlightID, run fids for valid ones**")
 
+	def do_takeoff(self, arg):
+		"""selects a runway for takeoff"""
+		args = arg.split()
+		if len(args) == 0:
+			print("**Missing FlightID**")
+			return False
+		for avion in Aircraft.plane_list:
+			if str(avion.FlightID) == str(args[0]):
+				aeropuerto.desired_runway(avion)
+
+
 	#method used for tests
 	def do_test(self, arg):
 		""""method for testing"""

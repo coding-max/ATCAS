@@ -243,20 +243,20 @@ class Aircraft(object):
 		#self.collision(target)
 		
 	#To create an estimated flightpath, an initial path list with current location and time is needed
-	def create_estimated_flightpath(self, altitude_to_descend=0):
+	def create_estimated_flightpath(self, altitude_to_change=0):
 		"""Method that creates a preliminar route for a plane"""
 		flightpath = []
 		current_time = datetime.strptime(self.path[self.current_path]["time"], '%Y-%m-%dt%H:%M:%Sz')
 		current_time = current_time + timedelta(0, 60 / Aircraft.refresh_rate)
-		if altitude_to_descend == 0:
+		if altitude_to_change == 0:
 			delta_altitude = 0
 		else:
-			if altitude_to_descend > 0:
+			if altitude_to_change > 0:
 				delta_altitude = 1000 / Aircraft.refresh_rate
 			else:
 				delta_altitude = -1000 / Aircraft.refresh_rate
 
-		altitude_to_descend -= delta_altitude
+		altitude_to_change -= delta_altitude
 		next_location = self.point_ahead(self.path[self.current_path]["latitude"],
 										 self.path[self.current_path]["longitude"],
 										 self.path[self.current_path]["truck"],
@@ -274,10 +274,10 @@ class Aircraft(object):
 				or ((next_location["latitude"] > -31.40 and next_location["latitude"] < -30.00) and (next_location["longitude"] > -58.15 and next_location["longitude"] < -56.00))
 				or ((next_location["latitude"] > -31.40 and next_location["latitude"] < -30.75) and (next_location["longitude"] > -56.00 and next_location["longitude"] < -54.80))):
 
-			if (altitude_to_descend > -500) and (altitude_to_descend < 500):
-				delta_altitude = altitude_to_descend
+			if (altitude_to_change > -333) and (altitude_to_change < 333):
+				delta_altitude = altitude_to_change
 			else:
-				altitude_to_descend -= delta_altitude
+				altitude_to_change -= delta_altitude
 			current_time = current_time + timedelta(0, 60 / Aircraft.refresh_rate)
 			next_location = self.point_ahead(next_location["latitude"],
 											 next_location["longitude"],
