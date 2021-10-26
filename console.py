@@ -170,7 +170,7 @@ class ATCAScmd(cmd.Cmd):
 						else:
 							avion.suggested_flightpath = []
 							return False
-						with open("././test_flights/{:}.json".format(doc), 'w') as f:
+						with open("test_flights/{:}.json".format(doc), 'w') as f:
 							json.dump("changed", f)
 						avion.switch_manifesto()
 						avion.suggested_flightpath = []
@@ -195,8 +195,10 @@ class ATCAScmd(cmd.Cmd):
 	#method used for tests
 	def do_test(self, arg):
 		""""method for testing"""
-		plane = Aircraft("E480D1")
-		print(plane.to_geojson())
+		ATCAScmd.do_create(" "," ")
+		ATCAScmd.do_allcollisions(" "," ")
+		ATCAScmd.do_accept_newpath(" ","IB420")
+		#print(plane.to_geojson())
 		#plane.accept_route()
 
 if __name__ == '__main__':
