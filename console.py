@@ -170,7 +170,7 @@ class ATCAScmd(cmd.Cmd):
 						else:
 							avion.suggested_flightpath = []
 							return False
-						with open("././test_flights/{:}.json".format(doc), 'w') as f:
+						with open("test_flights/{:}.json".format(doc), 'w') as f:
 							json.dump("changed", f)
 						avion.switch_manifesto()
 						avion.suggested_flightpath = []
