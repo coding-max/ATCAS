@@ -40,16 +40,30 @@ const airplaneRed = L.icon({
 });
 L.marker([-34.833, -56.030]).addTo(map).bindPopup("I am an invented airplane.");
 
+const markers_dict = {};
 async function getPlanes() {
   const json = await $.getJSON('flights.json', function (index) {
     for (let i = 0; i < Object.keys(index).length; i++) {
-      const markers = L.marker([index[i].path[0].latitude, index[i].path[0].longitude], { icon: airplane, rotationAngle: index[i].path[0].truck, id: "airplane"}); 
-      markers.addTo(map).bindPopup("I am airplane " + index[i].ICAO + " .")
-      let flag = true;
+      if (!markers_dict[index[i].FlightID]){
+        try {
+          markers_dict[index[i].FlightID].marker.remove();
+          continue;
+        }
+        catch (err) {
+          console.log("no marker");
+        }
+        markers_dict[index[i].FlightID] = index[i];
+        markers_dict[index[i].FlightID].status = "not selected";
+        markers_dict[index[i].FlightID].marker = L.marker([index[i].path[0].latitude, index[i].path[0].longitude], { icon: airplane, rotationAngle: index[i].path[0].truck});
+        markers_dict[index[i].FlightID].marker.addTo(map).bindPopup("I am airplane " + index[i].ICAO + " .");
+      } else {
+          markers_dict[index[i].FlightID].marker.setLatLng([index[i].path[0].latitude, index[i].path[0].longitude]);
+      }
       let route = L.polyline([]);
-      markers.on("click", function onClick(e) {
-        if(markers.options.icon.options.iconId == 'airplane') {
-          markers.setIcon(airplaneSel);
+      markers_dict[index[i].FlightID].marker.on("click", function onClick(e) {
+        if(markers_dict[index[i].FlightID].status == 'not selected') {
+          markers_dict[index[i].FlightID].marker.setIcon(airplaneSel);
+          markers_dict[index[i].FlightID].status = "selected";
           const estimated = [];
           estimated.push([index[i].path[0].latitude, index[i].path[0].longitude]);
           for (let j = 0; j < index[i].estimated_flightpath.length; j++) {
@@ -58,11 +72,10 @@ async function getPlanes() {
           route.remove();
           route = L.polyline(estimated);
           route.addTo(map);
-          flag = false;
         } else {
-          markers.setIcon(airplane);
+          markers_dict[index[i].FlightID].status = "not selected";
+          markers_dict[index[i].FlightID].marker.setIcon(airplane);
           route.remove();
-          flag = true;
         }
       });
     }
@@ -70,6 +83,7 @@ async function getPlanes() {
 }
 
 getPlanes();
+console.log(markers_dict);
 setInterval(getPlanes, 10000);
 
 //   Center Airport Button
