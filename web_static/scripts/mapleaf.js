@@ -40,18 +40,11 @@ const airplaneRed = L.icon({
 });
 L.marker([-34.833, -56.030]).addTo(map).bindPopup("I am an invented airplane.");
 
-const markers_dict = {};
-async function getPlanes() {
-  const json = await $.getJSON('flights.json', function (index) {
+function getPlanes() {
+  const json = $.getJSON('flights.json', function (index) {
     for (let i = 0; i < Object.keys(index).length; i++) {
+      const markers_dict = {};
       if (!markers_dict[index[i].FlightID]){
-        try {
-          markers_dict[index[i].FlightID].marker.remove();
-          continue;
-        }
-        catch (err) {
-          console.log("no marker");
-        }
         markers_dict[index[i].FlightID] = index[i];
         markers_dict[index[i].FlightID].status = "not selected";
         markers_dict[index[i].FlightID].marker = L.marker([index[i].path[0].latitude, index[i].path[0].longitude], { icon: airplane, rotationAngle: index[i].path[0].truck});
@@ -80,12 +73,11 @@ async function getPlanes() {
       });
     }
   });
+  console.log(markers_dict)
 }
 
 getPlanes();
-console.log(markers_dict);
-setInterval(getPlanes, 10000);
-
+setInterval(getPlanes, 1000000);
 //   Center Airport Button
 airportId.onclick = function () {
   map.flyTo(airport, 14);
