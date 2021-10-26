@@ -10,6 +10,12 @@
   .ol-layer {
     box-shadow: darkgray;
   }
+  .logo_text {
+    text-align: center;
+    font-size: 1.5vh;
+    margin-top: 20px;
+    color: white;
+  }
   .brand {
     width: 7rem;
   }
