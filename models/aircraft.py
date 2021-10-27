@@ -98,6 +98,16 @@ class Aircraft(object):
 		return "[{:s}] ({:s}) {}".format(self.__class__.__name__, self.FlightID,
 										 self.__dict__)
 
+	def remove_datetime(self):
+		"""transforms all datetims to str"""
+		for element in self.path:
+			element["time"].strftime('%Y-%m-%dt%H:%M:%Sz')
+		for elem in self.estimated_flightpath:
+			elem["time"].strftime('%Y-%m-%dt%H:%M:%Sz')
+		for elements in self.suggested_flightpath:
+			elements["time"].strftime('%Y-%m-%dt%H:%M:%Sz')
+	
+
 	def to_dict(self):
 		"""returns a dictionary containing all keys/values of the instance"""
 		new_dict = self.__dict__.copy()

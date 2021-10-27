@@ -10,39 +10,38 @@ from models import storage
 from models.airport import Airport
 from models.aircraft import Aircraft
 import json
+from datetime import date, datetime, timedelta
+from time import sleep
 
-
-@app_views.route('/airport', methods=['GET'], strict_slashes=False)
-def create_airport():
-    """returns information about the current working airport"""
-    airport = Airport("MVD").to_dict()
-    #airport = Aircraft.plane_list
-    return jsonify(airport)
-
-
-@app_views.route('/flights', methods=['GET'], strict_slashes=False)
-def flights():
-    """returns a json with information about all flights in the airspace"""
-    """ret = []
+def recursiva():
+    """recursiva"""
+    ret = []
+    
     for plane in Airport.airplane_list:
         if plane not in Airport.mapped_planes:
-            avion = Aircraft(str(plane))
             Airport.mapped_planes.append(plane)
-            avion.create_estimated_flightpath()
-    print(Aircraft.plane_list)
-    print(Aircraft.all_collision(Aircraft.plane_list))
+            avion = Aircraft(str(plane))
+    #print(Aircraft.all_collision(Aircraft.plane_list))
     for avion in Aircraft.plane_list:
+        avion.create_estimated_flightpath()
         avion.update()
+        avion.create_estimated_flightpath()
+    Aircraft.all_collision(Aircraft.plane_list)
+    for avion in Aircraft.plane_list:
         while (len(avion.estimated_flightpath) > 2):
             avion.estimated_flightpath.remove(avion.estimated_flightpath[1])
         while (len(avion.suggested_flightpath) > 2):
             avion.suggested_flightpath.remove(avion.suggested_flightpath[1])
-    print(Airport.map_collisions)          
     for elem in Airport.map_collisions:
         ret.append(elem)
     for avv in Aircraft.plane_list:
         ret.append(avv.to_dict())
-    return jsonify(ret)"""
-    with open("wopa.json", 'r') as f:
-        stat = json.load(f)
-    return jsonify(stat)
+    print(ret)
+    with open('wopa.json', 'w') as outfile:
+        json.dump(ret, outfile, default=str)
+    print("tuvieja")
+    sleep(3)
+    recursiva()
+
+if __name__ == '__main__':
+    recursiva()

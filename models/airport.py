@@ -50,6 +50,7 @@ class Airport():
 	
 	def arrivals(self):
 		"""returns all arrivals from this airport"""
+		return 
 
 	def departures(self):
 		"""returns all departures from this airport"""
