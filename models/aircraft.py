@@ -66,10 +66,7 @@ class Aircraft(object):
 
 		#Queries for dinamic information
 		self.path = models.storage.aircraft_query_update(args)
-		if (len(self.path) == 1):
-			self.manifesto = False
-		else:
-			self.manifesto = True
+		self.manifesto = False
 		self.current_path = 0
 		wpa = 0
 		while (datetime.strptime(self.path[wpa]["time"], '%Y-%m-%dt%H:%M:%Sz') -
@@ -112,32 +109,6 @@ class Aircraft(object):
 		"""returns a dictionary containing all keys/values of the instance"""
 		new_dict = self.__dict__.copy()
 		return new_dict
-
-	def to_geojson(self):
-		"""converts aircraft object to geojson serializable"""
-		
-		geojson = {
-			"type": "FeatureCollection",
-			"features": [
-			{
-				"type": "Feature",
-				"geometry" : {
-						"type": "Point",
-						"coordinates": [self.path[0]["longitude"], self.path[0]["latitude"]],
-				},
-				"properties" : self.to_dict(),
-			},
-			{
-				"type": "Feature",
-				"geometry" : {
-					"type": "Point",
-					"coordinates": [self.estimated_flightpath[1]["longitude"], self.estimated_flightpath[1]["latitude"]],
-				},
-				"properties" : {},
-			}
-			]
-		}
-		return geojson
 
 	def update(self):
 		"""update all information of aircraft"""
