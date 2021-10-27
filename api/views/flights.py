@@ -23,6 +23,6 @@ def create_airport():
 @app_views.route('/flights', methods=['GET'], strict_slashes=False)
 def flights():
     """returns a json with information about all flights in the airspace"""
-    with open("wopa.json", 'r') as f:
+    with open("./api/views/output.json", 'r') as f:
         stat = json.load(f)
     return jsonify(stat)
