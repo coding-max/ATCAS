@@ -5,25 +5,13 @@ which the web app frontend uses to load the processed data in backend
 """
 
 from flask import jsonify, abort, request, make_response
-from api.v1.views import app_views
 from models import storage
 from models.airport import Airport
 from models.aircraft import Aircraft
-import json
 
-
-@app_views.route('/airport', methods=['GET'], strict_slashes=False)
-def create_airport():
-    """returns information about the current working airport"""
-    airport = Airport("MVD").to_dict()
-    #airport = Aircraft.plane_list
-    return jsonify(airport)
-
-
-@app_views.route('/flights', methods=['GET'], strict_slashes=False)
-def flights():
-    """returns a json with information about all flights in the airspace"""
-    """ret = []
+def recursiva():
+    """recursiva"""
+    ret = []
     for plane in Airport.airplane_list:
         if plane not in Airport.mapped_planes:
             avion = Aircraft(str(plane))
@@ -35,14 +23,21 @@ def flights():
         avion.update()
         while (len(avion.estimated_flightpath) > 2):
             avion.estimated_flightpath.remove(avion.estimated_flightpath[1])
+            avion.estimated_flightpath[1]["time"]
         while (len(avion.suggested_flightpath) > 2):
             avion.suggested_flightpath.remove(avion.suggested_flightpath[1])
     print(Airport.map_collisions)          
     for elem in Airport.map_collisions:
+        #elem.crash_time.strftime()
         ret.append(elem)
     for avv in Aircraft.plane_list:
+        avv.remove_datetime()
         ret.append(avv.to_dict())
-    return jsonify(ret)"""
-    with open("wopa.json", 'r') as f:
-        stat = json.load(f)
-    return jsonify(stat)
+    with open('IB420.json', 'w') as outfile:
+        json.dump(ret, outfile)
+    print("tuvieja")
+    sleep(20)
+    recursiva()
+
+if __name__ == '__main__':
+    recursiva()

@@ -170,7 +170,7 @@ class ATCAScmd(cmd.Cmd):
 						else:
 							avion.suggested_flightpath = []
 							return False
-						with open("././test_flights/{:}.json".format(doc), 'w') as f:
+						with open("test_flights/{:}.json".format(doc), 'w') as f:
 							json.dump("changed", f)
 						avion.switch_manifesto()
 						avion.suggested_flightpath = []
@@ -181,11 +181,24 @@ class ATCAScmd(cmd.Cmd):
 						return False
 			print("**Wrong FlightID, run fids for valid ones**")
 
+	def do_takeoff(self, arg):
+		"""selects a runway for takeoff"""
+		args = arg.split()
+		if len(args) == 0:
+			print("**Missing FlightID**")
+			return False
+		for avion in Aircraft.plane_list:
+			if str(avion.FlightID) == str(args[0]):
+				aeropuerto.desired_runway(avion)
+
+
 	#method used for tests
 	def do_test(self, arg):
 		""""method for testing"""
-		plane = Aircraft("E480D1")
-		print(plane.to_geojson())
+		ATCAScmd.do_create(" "," ")
+		ATCAScmd.do_allcollisions(" "," ")
+		ATCAScmd.do_accept_newpath(" ","IB420")
+		#print(plane.to_geojson())
 		#plane.accept_route()
 
 if __name__ == '__main__':
