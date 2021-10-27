@@ -7,8 +7,10 @@
     <!-- Title -->
     <title>ATCAS - Air Traffic Controller Assistant Software</title>
     <link rel='shortcut icon' href="./images/logo_ATCAS.ico" type="image/x-icon"/>
+    <!-- <link rel='shortcut icon' href="{{ url_for('static', filename='images/logo_ATCAS.ico') }}" type="image/x-icon"/> -->
     <!-- Personal CSS -->
     <link rel="stylesheet" href="./styles/dashboard.css">
+    <!-- <link rel='shortcut icon' href="{{ url_for('static', filename='styles/dashboard.css') }}"/> -->
     <!-- Imported CSS and Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
@@ -28,7 +30,8 @@
         <div class="linear_bg" id="sidebar-wrapper">
             <div class="sidebar-heading text-center py-4 text-white fs-4 text-uppercase border-bottom">
                 <img src="./images/logo_ATCAS.png" class="brand"> <br>
-                <h6 style="text-align: center; font-size: 1.5vh; margin-top: 20px;"> AIR TRAFFIC CONTROLLER<br>ASSISTANT SOFTWARE </h6>
+                <!-- <img src="{{ url_for('static', filename='images/logo_ATCAS.png') }}" class="brand"> <br> -->
+                <h6 class="logo_text"> AIR TRAFFIC CONTROLLER<br>ASSISTANT SOFTWARE </h6>
             </div>
             <div class="list-group list-group-flush my-3">
                 <a href="#" class="list-group-item list-group-item-action bg-blue second-text active"><i
@@ -76,7 +79,7 @@
             <div class="container-fluid px-4">
                 <div class="row ">
                     <div class="input-group">
-                        <input type="search" id="search-autocomplete" class="form-control rounded" placeholder="Search by ICAO number..." aria-label="Search" aria-describedby="search-addon">
+                        <input type="search" id="search-autocomplete" class="form-control rounded" placeholder="Search by FlightID number..." aria-label="Search" aria-describedby="search-addon">
                         <span class="input-group-text border-0" id="search-addon">
                           <i class="fas fa-search"></i>
                         </span>
@@ -85,13 +88,21 @@
                 <div class="row g-3 my-2">
                     <div id="mapid" class="map col-md-9"></div>
                     <div class="col-md-3">
-                        <div class="p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded my-2">
+                        <div class="p-1 bg-white shadow-sm d-flex justify-content-around align-items-center my-2">
                             <div>
-                                <button type="button" class="btn btn-secondary btn-sm" id="center-airport">Center Airport</button>
-                                <button type="button" class="btn btn-secondary btn-sm" id="center-map">Center Map</button>
+                                <p class="my-2">Flights on Airspace: <span id="total-flights"></span></p>
+                                <hr class="my-2" style="width: 100%;">
+                                <ul id="flights" class="list-unstyled small my-2">
+                                </ul>
                             </div>
                         </div>
                         <div class="p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded my-2">
+                            <div>
+                                <button type="button" class="btn btn-secondary btn-sm" id="center-map">Center Uruguay</button>
+                                <button type="button" class="btn btn-secondary btn-sm" id="center-airport">Center Airport</button>
+                            </div>
+                        </div>
+                        <!-- <div class="p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded my-2">
                             <div>
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" role="switch" id="runwaySix" checked>
@@ -106,12 +117,14 @@
                                     <label class="form-check-label" for="flexSwitchCheckDefault" id="oneLabel">Disable Runway 01/19</label>
                                 </div>
                             </div>
-                        </div>
-                        <div class="p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded my-4">
+                        </div> -->
+                        <div class="p-2 bg-white shadow-sm d-flex justify-content-around align-items-center text-center rounded my-2">
                             <div>
-                                <p>Possible Collitions</p>
-                                <hr>
-                                <p id="collision" class="small" style="color: rgb(169, 169, 169)">Select a plane in the map...</p>
+                                <p class="my-2">Possible Collitions</p>
+                                <hr class="my-2" style="width: 100%;">
+                                <ul class="list-unstyled small my-2" style="color: rgb(169, 169, 169)">
+                                    <li id="collision">Select a plane in the map or in the search bar...</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -123,10 +136,14 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Sidebar Wrapper JS -->
     <script type="text/javascript" src="./scripts/wrapper.js"></script>
+    <!-- <script type="text/javascript" src="{{ url_for('static', filename='scripts/wrapper.js') }}"></script> -->
     <!-- Map JS -->
     <script src="./scripts/leaflet.rotatedMarker.js"></script>
+    <!-- <script src="{{ url_for('static', filename='scripts/rotatedMarker.js') }}"></script> -->
     <script src="./scripts/mapleaf.js"></script>
+    <!-- <script src="{{ url_for('static', filename='scripts/mapleaf.js') }}"></script> -->
     <!-- Runway ON/OFF -->
     <script src="./scripts/runways.js"></script>
+    <!-- <script src="{{ url_for('static', filename='scripts/runways.js') }}"></script> -->
 </body> 
 </html>
