@@ -4,10 +4,11 @@
 from flask import Flask, jsonify, make_response
 from flask_cors import CORS
 from models import storage
-from api.v1.views import app_views
+from api.views import app_views
 from os import getenv
 
 app = Flask(__name__)
+app.secret_key = "super_secret_key"
 app.register_blueprint(app_views)
 app.url_map.strict_slashes = False
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
