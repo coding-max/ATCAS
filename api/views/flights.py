@@ -5,7 +5,7 @@ which the web app frontend uses to load the processed data in backend
 """
 
 from flask import jsonify, abort, request, make_response
-from api.v1.views import app_views
+from api.views import app_views
 from models import storage
 from models.airport import Airport
 from models.aircraft import Aircraft
