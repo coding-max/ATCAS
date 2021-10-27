@@ -18,6 +18,16 @@ def connect():
         return pymysql.connect(host=host, user=user, password=password, database=database)
 
 
+def get_user(usr, pwd):
+    """Returns a list that contains the IDs of all flights in the database"""
+    connection = connect()
+    with connection:
+        cur = connection.cursor()
+        query = 'SELECT FirstName, LastName FROM Users WHERE User="{}" AND Password="{}"'.format(usr, pwd)
+        cur.execute(query)
+        return cur.fetchone()
+
+
 def get_flights_ids():
     """Returns a list that contains the IDs of all flights in the database"""
     connection = connect()
