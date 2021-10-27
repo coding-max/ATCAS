@@ -6,13 +6,13 @@
     "airline": "", 
     "arrival_IATA": "", 
     "arrival_ICAO": "", 
-    "arrival_airport": "", 
+    "arrival_airport": "MAD", 
     "arrival_time": "0000-00-00 00:00:00", 
     "collision_l": [], 
     "current_path": 0, 
     "departure_IATA": "", 
     "departure_ICAO": "", 
-    "departure_airport": "", 
+    "departure_airport": "MVD", 
     "departure_time": "0000-00-00 00:00:00", 
     "estimated_flightpath": [
       {
@@ -56,13 +56,13 @@
     "airline": "", 
     "arrival_IATA": "", 
     "arrival_ICAO": "", 
-    "arrival_airport": "", 
+    "arrival_airport": "NYC", 
     "arrival_time": "0000-00-00 00:00:00", 
     "collision_l": [], 
     "current_path": 0, 
     "departure_IATA": "", 
     "departure_ICAO": "", 
-    "departure_airport": "", 
+    "departure_airport": "EZE", 
     "departure_time": "0000-00-00 00:00:00", 
     "estimated_flightpath": [
       {
@@ -86,8 +86,8 @@
     "path": [
       {
         "altitude": 31225, 
-        "latitude": -33.8235, 
-        "longitude": -57.3069, 
+        "latitude": -33.2235, 
+        "longitude": -57.6069, 
         "speed": 393, 
         "time": "2021-10-20T16:26:40Z", 
         "truck": 224
@@ -106,13 +106,13 @@
     "airline": "", 
     "arrival_IATA": "", 
     "arrival_ICAO": "", 
-    "arrival_airport": "", 
+    "arrival_airport": "CUM", 
     "arrival_time": "0000-00-00 00:00:00", 
-    "collision_l": [], 
+    "collision_l": ["tu vieja"], 
     "current_path": 0, 
     "departure_IATA": "", 
     "departure_ICAO": "", 
-    "departure_airport": "", 
+    "departure_airport": "SGO", 
     "departure_time": "0000-00-00 00:00:00", 
     "estimated_flightpath": [
       {
@@ -156,13 +156,13 @@
     "airline": null, 
     "arrival_IATA": "", 
     "arrival_ICAO": "", 
-    "arrival_airport": "", 
+    "arrival_airport": "EZE", 
     "arrival_time": null, 
     "collision_l": [], 
     "current_path": 0, 
     "departure_IATA": "", 
     "departure_ICAO": "", 
-    "departure_airport": "", 
+    "departure_airport": "MVD", 
     "departure_time": null, 
     "estimated_flightpath": [
       {
@@ -206,13 +206,13 @@
     "airline": "", 
     "arrival_IATA": "", 
     "arrival_ICAO": "", 
-    "arrival_airport": "", 
+    "arrival_airport": "PKN", 
     "arrival_time": "", 
     "collision_l": [], 
     "current_path": 0, 
     "departure_IATA": "", 
     "departure_ICAO": "", 
-    "departure_airport": "", 
+    "departure_airport": "EZE", 
     "departure_time": "", 
     "estimated_flightpath": [
       {
@@ -237,7 +237,7 @@
       {
         "altitude": 37000, 
         "latitude": -32.47405478661046, 
-        "longitude": -56.64468021842062, 
+        "longitude": -56.84468021842062, 
         "speed": 500, 
         "time": "2021-10-21T00:13:50Z", 
         "truck": 315

@@ -12,17 +12,14 @@
   }
   .logo_text {
     text-align: center;
-    font-size: 1.5vh;
-    margin-top: 20px;
+    font-size: clamp(10px, 1.5vh, 22px);
+    margin-top: 5%;
     color: white;
   }
   .brand {
     width: 7rem;
   }
-  .logo_text {
-    margin-top: 5%;
-    font-size: 1.5vh;
-  }
+
   .primary-text {
     color: var(--main-text-color);
   }
@@ -102,7 +99,13 @@
     font-weight: bold;
     border: none;
   }
-  
+  .flights {
+    width: 100%;
+    background: transparent;
+  }
+  .flights:hover {
+    background: lightgray;
+  }
   @media (min-width: 768px) {
     #sidebar-wrapper {
       margin-left: 0;
