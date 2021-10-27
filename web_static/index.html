@@ -28,7 +28,7 @@
         <div class="linear_bg" id="sidebar-wrapper">
             <div class="sidebar-heading text-center py-4 text-white fs-4 text-uppercase border-bottom">
                 <img src="./images/logo_ATCAS.png" class="brand"> <br>
-                <h6 style="text-align: center; font-size: 1.5vh; margin-top: 20px;"> AIR TRAFFIC CONTROLLER<br>ASSISTANT SOFTWARE </h6>
+                <h6 class="logo_text"> AIR TRAFFIC CONTROLLER<br>ASSISTANT SOFTWARE </h6>
             </div>
             <div class="list-group list-group-flush my-3">
                 <a href="#" class="list-group-item list-group-item-action bg-blue second-text active"><i
@@ -85,10 +85,15 @@
                 <div class="row g-3 my-2">
                     <div id="mapid" class="map col-md-9"></div>
                     <div class="col-md-3">
+                        <div class="p-1 bg-white shadow-sm d-flex justify-content-around align-items-center my-2">
+                            <div>
+                                <p class="my-2">Flights on Airspace: <span id="total-flights"></span></p>
+                            </div>
+                        </div>
                         <div class="p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded my-2">
                             <div>
+                                <button type="button" class="btn btn-secondary btn-sm" id="center-map">Center Uruguay</button>
                                 <button type="button" class="btn btn-secondary btn-sm" id="center-airport">Center Airport</button>
-                                <button type="button" class="btn btn-secondary btn-sm" id="center-map">Center Map</button>
                             </div>
                         </div>
                         <div class="p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded my-2">
@@ -107,11 +112,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded my-4">
+                        <div class="p-2 bg-white shadow-sm d-flex justify-content-around align-items-center text-center rounded my-2">
                             <div>
-                                <p>Possible Collitions</p>
-                                <hr>
-                                <p id="collision" class="small" style="color: rgb(169, 169, 169)">Select a plane in the map...</p>
+                                <p class="my-2">Possible Collitions</p>
+                                <hr class="my-2" style="width: 100%;">
+                                <ul class="list-unstyled small my-2" style="color: rgb(169, 169, 169)">
+                                    <li id="collision">Select a plane in the map or in the search bar...</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
