@@ -26,3 +26,5 @@ def flights():
     with open("./api/views/output.json", 'r') as f:
         stat = json.load(f)
     return jsonify(stat)
+
+
