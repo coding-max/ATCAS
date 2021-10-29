@@ -1,0 +1,2 @@
+#!/bin/bash
+./test_simulated_flight1.py & ./test_simulated_flight2.py
