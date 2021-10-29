@@ -198,8 +198,7 @@ class ATCAScmd(cmd.Cmd):
 		ATCAScmd.do_create(" "," ")
 		ATCAScmd.do_allcollisions(" "," ")
 		ATCAScmd.do_accept_newpath(" ","IB420")
-		#print(plane.to_geojson())
-		#plane.accept_route()
+
 
 if __name__ == '__main__':
     ATCAScmd().cmdloop()

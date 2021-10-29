@@ -4,8 +4,7 @@ Contains class Airacft
 """
 
 import models
-import numpy as np
-import json
+
 
 class Airport():
 	airplane_list = models.storage.all_ids()
@@ -44,37 +43,3 @@ class Airport():
 			new_dict["registration"] = new_dict["registration"].strftime(time)
 		new_dict["__class__"] = self.__class__.__name__
 		return new_dict
-
-	def add_plane(self, avion):
-		"""adds plane to airspace"""
-	
-	def arrivals(self):
-		"""returns all arrivals from this airport"""
-		return 
-
-	def departures(self):
-		"""returns all departures from this airport"""
-
-	def can_add(self, avion):
-		"""checks if a plane can be added to airspace"""
-
-	"""
-	def desired_runway(self, avion):
-		Chooses a runway for landing or takeoff based on destination and weather conditions
-		weather_runway = "query result"
-		weather_direction = "pal otro lado"
-		if self.runway[weather_runway] == "enabled":
-			avion.takeoff = weather_runway
-			avion.takeoff_direction = weather_direction
-			return weather_runway
-		else:
-			return weather_runway
-
-	def dinamic_runway(self, avion):
-		allows change of runway made
-		avion.takeoff = avion.dinamic_takeoff
-		avion.takeoff_direction = avion.dinamic_takeoff_direction 
-		avion.path = avion.create_estimated_flightpath(9000)
-		for crash in models.Aircraft.plane_list:
-			avion.collision(crash)
-	"""

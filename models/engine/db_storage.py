@@ -87,41 +87,8 @@ class DBStorage:
 			query of all updated values, returns a dictionary
 			with all the information
 		"""
-
-		#this is to taste collisions
-
-		"""
-		thisdict = {
-			"latitude": int(69.69),
-			"longitude": int(69.69),
-			"altitude": int(6969),
-			"speed": "6969",
-			"truck": "6969",
-			"time": "6969",
-			"vertical_speed": "0",
-		}
-		lista_flightpath = [thisdict, thisdict, thisdict]
-		lista_flightpath = [{
-			"time": "2021-10-29t23:59:30z",
-			"latitude": -30.540642,
-			"longitude": -57.541443,
-			"altitude": 37000,
-			"truck": 437,
-			"speed": 166,
-		}]"""
-		"""
-		dic = {
-			"time": "2021-10-20t23:54:30z",
-			"latitude": -33.98713235069995,
-			"longitude": -58.70534826628892,
-			"altitude": 37000,
-			"truck": 45,
-			"speed": 500,
-		}
-		"""
 		lista_flightpath = [querys.get_path(flight_id)]
 		return lista_flightpath
-		#return [dic]
 
 	def airport_query(self, IATA):
 		"""

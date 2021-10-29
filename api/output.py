@@ -27,8 +27,8 @@ def feeder():
             avion.estimated_flightpath.remove(avion.estimated_flightpath[1])
         while (len(avion.suggested_flightpath) > 2):
             avion.suggested_flightpath.remove(avion.suggested_flightpath[1])
-    for elem in Airport.map_collisions:
-        ret.append(elem)
+    #for elem in Airport.map_collisions:
+    ret.append(Airport.map_collisions)
     for avv in Aircraft.plane_list:
         ret.append(avv.to_dict())
     with open('./api/views/output.json', 'w') as outfile:
