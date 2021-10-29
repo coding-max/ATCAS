@@ -122,6 +122,9 @@ h1, h2, h3, h4, h5, h6 {
   list-style: none;
   align-items: center;
 }
+.navbar ul .btn-secondary {
+  background-color: #48b0ff;
+}
 .navbar li {
   position: relative;
 }
@@ -330,7 +333,7 @@ h1, h2, h3, h4, h5, h6 {
   bottom: 0;
   min-width: 100%;
   min-height: 100%;
-  opacity: 0.3;
+  opacity: 0.2;
   z-index: 0;
 }
 #tag {
@@ -486,7 +489,7 @@ section {
 #about .about-container .background {
   min-height: 300px;
   background: url(../img/about-img.jpg) center top no-repeat;
-  background-size: cover;
+  background-size: contain;
   margin-bottom: 10px;
 }
 #about .about-container .content {

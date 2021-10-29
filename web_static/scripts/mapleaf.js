@@ -50,14 +50,11 @@ let polylines = new Array();
 let crashes = new Array();
 function getPlanes() {
   const json = $.getJSON('flights.json', function (index) {
-    if (polylines.length === 0) {
-      routeDel();
-    }
-    totalFlights.innerHTML = Object.keys(index).length;
+    totalFlights.innerHTML = Object.keys(index).length - 1;
     const markers_dict = {};
     flights.innerHTML = '';
     const autocomplete = [];
-    for (let i = 0; i < Object.keys(index).length; i++) {
+    for (let i = 1; i < Object.keys(index).length; i++) {
       let departure = index[i].departure_ICAO;
       if (departure === "") {
         departure = "N/A"
@@ -66,43 +63,77 @@ function getPlanes() {
       if (arrival === "") {
         arrival = "N/A"
       }
-      flights.innerHTML += '<li class="text-center my-2 rounded flights"> <b>' + index[i].FlightID + '</b></br>' + departure + ' <i class="fas fa-arrow-right me-2"></i>' + arrival + '</li>';
+      flights.innerHTML += '<li class="text-center my-2 rounded flights px-4" id="' + index[i].FlightID + '"> <b>' + index[i].FlightID + '</b></br>' + departure + ' <i class="fas fa-arrow-right me-2"></i>' + arrival + '</li>';
       autocomplete.push(index[i].FlightID);
-      const popupOptions =
-      {
-        'maxWidth': '500',
-        'className': 'another-popup' // classname for another popup
-      };
-      const popupContent = '<h4>Flight ID: ' + index[i].FlightID + '<h4></br><ul class="list-unstyled small"><li>Airline: ' + index[i].airline + '</li><li>Altitude: ' + index[i].path[0].altitude + '</li><li>Speed: ' + index[i].path[0].speed + '</li><li>Truck: ' + index[i].path[0].truck + '</li><li>Departure Airport: ' + index[i].departure_airport + '</li><li>Arrival Time: ' + index[i].arrival_time + '</li><li>Arrival Airport: ' + index[i].arrival_airport + '</li><li>Arrival Time: ' + index[i].arrival_time + '</li></ul>'
+      const popup = L.popup({
+        className: 'another-popup position-absolute',
+        autoPan: false,
+      }).setContent('<h6>Flight ID: ' + index[i].FlightID + '</h6></br><ul class="list-unstyled small"><li>Airline: ' + index[i].airline + '</li><li>Altitude: ' + index[i].path[0].altitude + '</li><li>Speed: ' + index[i].path[0].speed + '</li><li>Truck: ' + index[i].path[0].truck + '</li><li>Departure Airport: ' + index[i].departure_airport + '</li><li>Arrival Time: ' + index[i].arrival_time + '</li><li>Arrival Airport: ' + index[i].arrival_airport + '</li><li>Arrival Time: ' + index[i].arrival_time + '</li></ul>'
+      );
+      // if (index[i].collision_l.length > 0) {
+      //   swal({
+      //     icon: "warning",
+      //     title: 'Possible Collition',
+      //     text: 'Detected a possible collition between aircraft IB420  & aircraft IB696',
+      //     value: true,
+      //     visible: true,
+      //     closeModal: true,
+      //     button: 'Show flights'
+      //   })
+      //     .then((showFlight) => {
+      //       if (showFlight) {
+      //         markers_dict[index[i].FlightID].marker.setIcon(airplaneSel);
+      //         markers_dict[index[i].FlightID].status = 'selected';
+      //         markers_dict_selected[index[i].FlightID] = index[i];
+      //         markers_dict_selected[index[i].FlightID].route = L.polyline([[index[i].path[0].latitude, index[i].path[0].longitude], [index[i].estimated_flightpath[1].latitude, index[i].estimated_flightpath[1].longitude]]);
+      //         markers_dict_selected[index[i].FlightID].route.addTo(map);
+      //         polylines.push(markers_dict_selected[index[i].FlightID].route);
+      //         collision.innerHTML = '';
+      //         if (index[i].collision_l.length > 0) {
+      //           for (let k = 0; k < index[i].collision_l.length; k++) {
+      //             $('#collision').css('color', 'red');;
+      //             collision.innerHTML += '<li>Possible Collission between Aircraft ' + index[i].collision_l[k].ID1 + ' and Aircraft ' + index[i].collision_l[k].ID2 + ' at altitude ' + index[i].collision_l[k].crash_altitude + ' feets</li>';
+      //             markers_dict_selected[index[i].FlightID].crash = L.circle([index[i].collision_l[k].crash_latitude, index[i].collision_l[k].crash_longitude], { radius: index[i].collision_l[k].crash_radious, weight: 2, color: '#ff333a', fillColor: '#ff333a' }).addTo(map);
+      //             crashes.push(markers_dict_selected[index[i].FlightID].crash);
+      //           }
+      //         }
+      //       }
+      //     })
+      // }
       if (!markers_dict_selected[index[i].FlightID]) {
         markers_dict[index[i].FlightID] = index[i];
         markers_dict[index[i].FlightID].status = 'not selected';
         markers_dict[index[i].FlightID].marker = L.marker([index[i].path[0].latitude, index[i].path[0].longitude], { icon: airplane, rotationAngle: index[i].path[0].truck });
-        markers_dict[index[i].FlightID].marker.addTo(map).bindTooltip('FlightID: ' + index[i].FlightID).bindPopup(popupContent, popupOptions);
+        markers_dict[index[i].FlightID].marker.addTo(map).bindTooltip('FlightID: ' + index[i].FlightID).bindPopup(popup);
         markers.push(markers_dict[index[i].FlightID].marker);
       } else {
+        $('#' + index[i].FlightID).css('background', 'lightgray');
         markers_dict[index[i].FlightID] = index[i];
         markers_dict[index[i].FlightID].status = 'selected';
         markers_dict[index[i].FlightID].marker = L.marker([index[i].path[0].latitude, index[i].path[0].longitude], { icon: airplaneSel, rotationAngle: index[i].path[0].truck });
-        markers_dict[index[i].FlightID].marker.addTo(map).bindTooltip('FlightID: ' + index[i].FlightID).bindPopup(popupContent, popupOptions).openPopup();
+        markers_dict[index[i].FlightID].marker.addTo(map).bindTooltip('FlightID: ' + index[i].FlightID).bindPopup(popup).openPopup();
         markers.push(markers_dict[index[i].FlightID].marker);
         map.removeLayer(markers_dict_selected[index[i].FlightID].route);
-        markers.pop(markers_dict_selected[index[i].FlightID].marker);
         markers.pop(markers_dict_selected[index[i].FlightID].route);
         markers_dict[index[i].FlightID].route = L.polyline([[index[i].path[0].latitude, index[i].path[0].longitude], [index[i].estimated_flightpath[1].latitude, index[i].estimated_flightpath[1].longitude]]);
         markers_dict[index[i].FlightID].route.addTo(map);
         polylines.push(markers_dict[index[i].FlightID].route);
-        polylines.push(markers_dict_selected[index[i].FlightID].route);
-        collision.innerHTML = '';
         if (index[i].collision_l.length > 0) {
           for (let k = 0; k < index[i].collision_l.length; k++) {
-            $('#collision').css('color', 'red');;
-            console.log(index[i].collision_l);
-            collision.innerHTML += '<li>Possible Collission between Aircraft ' + index[i].collision_l[k].ID1 + ' and Aircraft ' + index[i].collision_l[k].ID2 + ' at altitude ' + index[i].collision_l[k].crash_altitude + ' feets</li>';
-            markers_dict_selected[index[i].FlightID].crash = L.circle([index[i].collision_l[k].crash_latitude, index[i].collision_l[k].crash_longitude], { radius: 21350, weight: 2, color: '#ff333a', fillColor: '#ff333a' }).addTo(map);
+            markers_dict_selected[index[i].FlightID].crash = L.circle([index[i].collision_l[k].crash_latitude, index[i].collision_l[k].crash_longitude], { radius: index[i].collision_l[k].crash_radious, weight: 2, color: '#ff333a', fillColor: '#ff333a' }).addTo(map);
             crashes.push(markers_dict_selected[index[i].FlightID].crash);
           }
         }
+      }
+      collision.innerHTML = '';
+      if (index[i].collision_l.length > 0) {
+        for (let k = 0; k < index[i].collision_l.length; k++) {
+          $('#collision').css('color', 'red');;
+          collision.innerHTML += '<li>' + index[i].collision_l[k].ID1 + ' <i class="fas fa-arrow-right me-2"></i>' + index[i].collision_l[k].ID2 + ' at ' + index[i].collision_l[k].crash_latitude.toFixed(3) + ' lat ' + index[i].collision_l[k].crash_longitude.toFixed(3) + ' long, altitude ' + index[i].collision_l[k].crash_altitude + ' feets, time: ' + index[i].collision_l[k].crash_time.replace('T', ' ').replace('Z', '') + '</li><a class="btn btn-outline-danger btn-sm">Suggest Flightpath</a><hr style="color: grey">';
+        }
+      } else {
+        $('#collision').css('color', 'rgb(169, 169, 169)');;
+        collision.innerHTML = '<li id="collision">No possible collisions detected on airspace</li>';
       }
       markers_dict[index[i].FlightID].marker.on('click', function onClick(e) {
         if (markers_dict[index[i].FlightID].status == 'not selected') {
@@ -112,16 +143,15 @@ function getPlanes() {
           markers_dict_selected[index[i].FlightID].route = L.polyline([[index[i].path[0].latitude, index[i].path[0].longitude], [index[i].estimated_flightpath[1].latitude, index[i].estimated_flightpath[1].longitude]]);
           markers_dict_selected[index[i].FlightID].route.addTo(map);
           polylines.push(markers_dict_selected[index[i].FlightID].route);
-          collision.innerHTML = '';
+          $('#' + index[i].FlightID).css('background', 'lightgray');
           if (index[i].collision_l.length > 0) {
             for (let k = 0; k < index[i].collision_l.length; k++) {
-              $('#collision').css('color', 'red');;
-              collision.innerHTML += '<li>Possible Collission between Aircraft ' + index[i].collision_l[k].ID1 + ' and Aircraft ' + index[i].collision_l[k].ID2 + ' at altitude ' + index[i].collision_l[k].crash_altitude + ' feets</li>';
-              markers_dict_selected[index[i].FlightID].crash = L.circle([index[i].collision_l[k].crash_latitude, index[i].collision_l[k].crash_longitude], { radius: index[i].collision_l[k].crash_radious * 10, weight: 2, color: '#ff333a', fillColor: '#ff333a' }).addTo(map);
+              markers_dict_selected[index[i].FlightID].crash = L.circle([index[i].collision_l[k].crash_latitude, index[i].collision_l[k].crash_longitude], { radius: index[i].collision_l[k].crash_radious, weight: 2, color: '#ff333a', fillColor: '#ff333a' }).addTo(map);
               crashes.push(markers_dict_selected[index[i].FlightID].crash);
             }
           }
         } else {
+          $('#'+ index[i].FlightID).css('background', 'transparent');
           crashDel();
           crashes = []
           map.removeLayer(markers_dict_selected[index[i].FlightID].route);
@@ -131,30 +161,27 @@ function getPlanes() {
           delete markers_dict_selected[index[i].FlightID];
           markers_dict[index[i].FlightID].status = 'not selected';
           markers_dict[index[i].FlightID].marker.setIcon(airplane).closePopup();
-          $('#collision').css('color', 'rgb(169, 169, 169)');;
-          collision.innerHTML = '<li id="collision">Select a plane in the map or in the search bar...</li>';
         }
       });
     }
     $('#flights > li').click(function () {
       const FlightIDLi = $(this).find('b').text();
       if (markers_dict[FlightIDLi].status == 'not selected') {
-        markers_dict[FlightIDLi].marker.setIcon(airplaneSel);
+        $('#' + FlightIDLi).css('background', 'lightgray');
+        markers_dict[FlightIDLi].marker.setIcon(airplaneSel).openPopup();
         markers_dict[FlightIDLi].status = 'selected';
         markers_dict_selected[FlightIDLi] = markers_dict[FlightIDLi];
         markers_dict_selected[FlightIDLi].route = L.polyline([[markers_dict[FlightIDLi].path[0].latitude, markers_dict[FlightIDLi].path[0].longitude], [markers_dict[FlightIDLi].estimated_flightpath[1].latitude, markers_dict[FlightIDLi].estimated_flightpath[1].longitude]]);
         markers_dict_selected[FlightIDLi].route.addTo(map);
         polylines.push(markers_dict_selected[FlightIDLi].route);
-        collision.innerHTML = '';
         if (markers_dict[FlightIDLi].collision_l.length > 0) {
           for (let k = 0; k < markers_dict[FlightIDLi].collision_l.length; k++) {
-            $('#collision').css('color', 'red');;
-            collision.innerHTML += '<li>Possible Collission between Aircraft ' + markers_dict_selected[FlightIDLi].collision_l[k].ID1 + ' and Aircraft ' + markers_dict_selected[FlightIDLi].collision_l[k].ID2 + ' at altitude ' + markers_dict_selected[FlightIDLi].collision_l[k].crash_altitude + ' feets</li>';
-            markers_dict_selected[FlightIDLi].crash = L.circle([markers_dict_selected[FlightIDLi].collision_l[k].crash_latitude, markers_dict_selected[FlightIDLi].collision_l[k].crash_longitude], { radius: markers_dict_selected[FlightIDLi].collision_l[k].crash_radious * 10, weight: 2, color: '#ff333a', fillColor: '#ff333a' }).addTo(map);
+            markers_dict_selected[FlightIDLi].crash = L.circle([markers_dict_selected[FlightIDLi].collision_l[k].crash_latitude, markers_dict_selected[FlightIDLi].collision_l[k].crash_longitude], { radius: markers_dict_selected[FlightIDLi].collision_l[k].crash_radious, weight: 2, color: '#ff333a', fillColor: '#ff333a' }).addTo(map);
             crashes.push(markers_dict_selected[FlightIDLi].crash);
           }
         }
       } else {
+        $('#' + FlightIDLi).css('background', 'transparent');
         crashDel();
         crashes = []
         map.removeLayer(markers_dict_selected[FlightIDLi].route);
@@ -164,10 +191,38 @@ function getPlanes() {
         delete markers_dict_selected[FlightIDLi];
         markers_dict[FlightIDLi].status = 'not selected';
         markers_dict[FlightIDLi].marker.setIcon(airplane).closePopup();
-        $('#collision').css('color', 'rgb(169, 169, 169)');;
-        collision.innerHTML = '<li id="collision">Select a plane in the map or in the search bar...</li>';
       }
     });
+    // $('#collision > a').click(function () {
+    //   const FlightIDa = $(this).parent().text();
+    //   console.log(FlightIDa);
+    //   if (markers_dict[FlightIDa].status == 'not selected') {
+    //     $('#' + FlightIDa).css('background', 'lightgray');
+    //     markers_dict[FlightIDa].marker.setIcon(airplaneSel).openPopup();
+    //     markers_dict[FlightIDa].status = 'selected';
+    //     markers_dict_selected[FlightIDa] = markers_dict[FlightIDLi];
+    //     markers_dict_selected[FlightIDa].route = L.polyline([[markers_dict[FlightIDa].path[0].latitude, markers_dict[FlightIDa].path[0].longitude], [markers_dict[FlightIDa].estimated_flightpath[1].latitude, markers_dict[FlightIDa].estimated_flightpath[1].longitude]]);
+    //     markers_dict_selected[FlightIDa].route.addTo(map);
+    //     polylines.push(markers_dict_selected[FlightIDa].route);
+    //     if (markers_dict[FlightIDa].collision_l.length > 0) {
+    //       for (let k = 0; k < markers_dict[FlightIDa].collision_l.length; k++) {
+    //         markers_dict_selected[FlightIDa].crash = L.circle([markers_dict_selected[FlightIDa].collision_l[k].crash_latitude, markers_dict_selected[FlightIDa].collision_l[k].crash_longitude], { radius: markers_dict_selected[FlightIDa].collision_l[k].crash_radious, weight: 2, color: '#ff333a', fillColor: '#ff333a' }).addTo(map);
+    //         crashes.push(markers_dict_selected[FlightIDa].crash);
+    //       }
+    //     }
+    //   } else {
+    //     $('#' + FlightIDa).css('background', 'transparent');
+    //     crashDel();
+    //     crashes = []
+    //     map.removeLayer(markers_dict_selected[FlightIDa].route);
+    //     map.removeLayer(markers_dict[FlightIDa].route);
+    //     polylines.pop(markers_dict[FlightIDa].route);
+    //     polylines.pop(markers_dict_selected[FlightIDa].route);
+    //     delete markers_dict_selected[FlightIDa];
+    //     markers_dict[FlightIDa].status = 'not selected';
+    //     markers_dict[FlightIDa].marker.setIcon(airplane).closePopup();
+    //   }
+    // });
     searchBar.addEventListener('keyup', (e) => {
       const searchString = e.target.value.toLowerCase();
       let filtered = [];
