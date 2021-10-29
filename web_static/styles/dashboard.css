@@ -99,32 +99,43 @@
     font-weight: bold;
     border: none;
   }
+  .flight-container {
+    max-height: 210px;
+    overflow-y: auto;
+  }
+  .collisions-container {
+    max-height: 170px;
+    overflow-y: auto;    
+  }
   .flights {
     width: 100%;
     background: transparent;
   }
   .flights:hover {
-    background: lightgray;
+    background: lightgray !important;
   }
   /*another-popop style*/
-  .another-popup .leaflet-popup-content-wrapper {
+  .another-popup {
+    position: fixed;
+    top: auto;
+    right: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
     background: rgba(10, 10, 10, 0.8);
-    color: green;
-    font-size: 8px;
-    line-height: 24px;
+    transform: none !important;
+    color: white;
+    margin: 0;
     border-radius: 10px;
   }
-  .another-popup .leaflet-popup-content-wrapper a {
-    color: rgba(200, 200, 200, 0.1);
+  .leaflet-popup-content-wrapper {
+    border-radius: 0;
   }
   .another-popup .leaflet-popup-tip-container {
     width: auto;
     height: auto;
   }
-  .another-popup .leaflet-popup-tip {
-    background: transparent;
-    border: none;
-    box-shadow: none;
+  .leaflet-popup-tip {
+    display: none;
   }
 
   @media (min-width: 768px) {
