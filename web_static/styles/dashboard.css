@@ -1,6 +1,6 @@
 :root {
     --main-bg-color: #cecece;
-    --main-text-color: #103585;
+    --main-text-color: #;
     --second-text-color: #ffffff;
     --second-bg-color: #65c1f0;
   }
@@ -106,6 +106,27 @@
   .flights:hover {
     background: lightgray;
   }
+  /*another-popop style*/
+  .another-popup .leaflet-popup-content-wrapper {
+    background: rgba(10, 10, 10, 0.8);
+    color: green;
+    font-size: 8px;
+    line-height: 24px;
+    border-radius: 10px;
+  }
+  .another-popup .leaflet-popup-content-wrapper a {
+    color: rgba(200, 200, 200, 0.1);
+  }
+  .another-popup .leaflet-popup-tip-container {
+    width: auto;
+    height: auto;
+  }
+  .another-popup .leaflet-popup-tip {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
   @media (min-width: 768px) {
     #sidebar-wrapper {
       margin-left: 0;
