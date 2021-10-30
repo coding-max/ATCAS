@@ -51,7 +51,7 @@ let crashes = new Array();
 let legend = L.control({ position: "topright" });
 function getPlanes() {
   // const json = $.getJSON('http://52.67.246.112:5000/api/flights', function (index) {
-  const json = $.getJSON('flights.json', function (index) {
+  const json = $.getJSON('http://api.atcas.tech:5000/api/flights', function (index) {
     totalFlights.innerHTML = Object.keys(index).length - 1;
     const markers_dict = {};
     flights.innerHTML = '';

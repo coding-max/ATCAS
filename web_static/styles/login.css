@@ -75,3 +75,14 @@ color: white;
 .links a{
 margin-left: 4px;
 }
+
+.logo_text{
+color: white;
+text-align: center;
+}
+
+.guest_btn{
+    color: black;
+    background-color: forestgreen;
+    width: 160px;
+}
