@@ -48,12 +48,17 @@ const route = {};
 let markers = new Array();
 let polylines = new Array();
 let crashes = new Array();
+let legend = L.control({ position: "topright" });
 function getPlanes() {
+  // const json = $.getJSON('http://52.67.246.112:5000/api/flights', function (index) {
   const json = $.getJSON('flights.json', function (index) {
     totalFlights.innerHTML = Object.keys(index).length - 1;
     const markers_dict = {};
     flights.innerHTML = '';
     const autocomplete = [];
+    try {
+      map.removeControl(legend);
+    } catch { };
     for (let i = 1; i < Object.keys(index).length; i++) {
       let departure = index[i].departure_ICAO;
       if (departure === "") {
@@ -68,8 +73,8 @@ function getPlanes() {
       const popup = L.popup({
         className: 'another-popup position-absolute',
         autoPan: false,
-      }).setContent('<h6>Flight ID: ' + index[i].FlightID + '</h6></br><ul class="list-unstyled small"><li>Airline: ' + index[i].airline + '</li><li>Altitude: ' + index[i].path[0].altitude + '</li><li>Speed: ' + index[i].path[0].speed + '</li><li>Truck: ' + index[i].path[0].truck + '</li><li>Departure Airport: ' + index[i].departure_airport + '</li><li>Arrival Time: ' + index[i].arrival_time + '</li><li>Arrival Airport: ' + index[i].arrival_airport + '</li><li>Arrival Time: ' + index[i].arrival_time + '</li></ul>'
-      );
+      });
+      // Alert on Collisions
       // if (index[i].collision_l.length > 0) {
       //   swal({
       //     icon: "warning",
@@ -101,20 +106,33 @@ function getPlanes() {
       //     })
       // }
       if (!markers_dict_selected[index[i].FlightID]) {
+        try {
+          map.removeControl(legend);
+        } catch { }
         markers_dict[index[i].FlightID] = index[i];
         markers_dict[index[i].FlightID].status = 'not selected';
         markers_dict[index[i].FlightID].marker = L.marker([index[i].path[0].latitude, index[i].path[0].longitude], { icon: airplane, rotationAngle: index[i].path[0].truck });
-        markers_dict[index[i].FlightID].marker.addTo(map).bindTooltip('FlightID: ' + index[i].FlightID).bindPopup(popup);
+        markers_dict[index[i].FlightID].marker.addTo(map);
+        // .bindTooltip('FlightID: ' + index[i].FlightID).bindPopup(popup);
         markers.push(markers_dict[index[i].FlightID].marker);
       } else {
+        legend.onAdd = function () {
+          let div = L.DomUtil.create("div", "legend");
+          div.innerHTML = '<p class="font-weight-bold my-2">Flight ID: ' + index[i].FlightID + '</p><hr class="my-1"><ul class="list-unstyled small my-2"><li>Airline: ' + index[i].airline + '</li><li>Altitude: ' + index[i].path[0].altitude + '</li><li>Speed: ' + index[i].path[0].speed + '</li><li>Truck: ' + index[i].path[0].truck + '</li><li>Departure Airport: ' + index[i].departure_airport + '</li><li>Arrival Time: ' + index[i].arrival_time + '</li><li>Arrival Airport: ' + index[i].arrival_airport + '</li><li>Arrival Time: ' + index[i].arrival_time + '</li></ul>';
+          return div
+        }
+        legend.addTo(map);
         $('#' + index[i].FlightID).css('background', 'lightgray');
         markers_dict[index[i].FlightID] = index[i];
         markers_dict[index[i].FlightID].status = 'selected';
         markers_dict[index[i].FlightID].marker = L.marker([index[i].path[0].latitude, index[i].path[0].longitude], { icon: airplaneSel, rotationAngle: index[i].path[0].truck });
-        markers_dict[index[i].FlightID].marker.addTo(map).bindTooltip('FlightID: ' + index[i].FlightID).bindPopup(popup).openPopup();
+        markers_dict[index[i].FlightID].marker.addTo(map).bindTooltip('FlightID: ' + index[i].FlightID);
         markers.push(markers_dict[index[i].FlightID].marker);
+        markers.push(markers_dict_selected[index[i].FlightID].marker);
         map.removeLayer(markers_dict_selected[index[i].FlightID].route);
+        map.removeLayer(markers_dict_selected[index[i].FlightID].marker);
         markers.pop(markers_dict_selected[index[i].FlightID].route);
+        markers.pop(markers_dict_selected[index[i].FlightID].marker);
         markers_dict[index[i].FlightID].route = L.polyline([[index[i].path[0].latitude, index[i].path[0].longitude], [index[i].estimated_flightpath[1].latitude, index[i].estimated_flightpath[1].longitude]]);
         markers_dict[index[i].FlightID].route.addTo(map);
         polylines.push(markers_dict[index[i].FlightID].route);
@@ -129,7 +147,7 @@ function getPlanes() {
       if (index[i].collision_l.length > 0) {
         for (let k = 0; k < index[i].collision_l.length; k++) {
           $('#collision').css('color', 'red');;
-          collision.innerHTML += '<li>' + index[i].collision_l[k].ID1 + ' <i class="fas fa-arrow-right me-2"></i>' + index[i].collision_l[k].ID2 + ' at ' + index[i].collision_l[k].crash_latitude.toFixed(3) + ' lat ' + index[i].collision_l[k].crash_longitude.toFixed(3) + ' long, altitude ' + index[i].collision_l[k].crash_altitude + ' feets, time: ' + index[i].collision_l[k].crash_time.replace('T', ' ').replace('Z', '') + '</li><a class="btn btn-outline-danger btn-sm">Suggest Flightpath</a><hr style="color: grey">';
+          collision.innerHTML += '<li>' + index[i].collision_l[k].ID1 + ' <i class="fas fa-arrow-right me-2"></i>' + index[i].collision_l[k].ID2 + ' at ' + index[i].collision_l[k].crash_latitude.toFixed(3) + ' lat ' + index[i].collision_l[k].crash_longitude.toFixed(3) + ' long, altitude ' + index[i].collision_l[k].crash_altitude + ' feets, time: ' + index[i].collision_l[k].crash_time.replace('T', ' ').replace('Z', '') + '</li><hr style="color: grey">';
         }
       } else {
         $('#collision').css('color', 'rgb(169, 169, 169)');;
@@ -137,6 +155,12 @@ function getPlanes() {
       }
       markers_dict[index[i].FlightID].marker.on('click', function onClick(e) {
         if (markers_dict[index[i].FlightID].status == 'not selected') {
+          legend.onAdd = function () {
+            let div = L.DomUtil.create("div", "legend");
+            div.innerHTML = '<p class="font-weight-bold my-2">Flight ID: ' + index[i].FlightID + '</p><hr class="my-1"><ul class="list-unstyled small my-2"><li>Airline: ' + index[i].airline + '</li><li>Altitude: ' + index[i].path[0].altitude + '</li><li>Speed: ' + index[i].path[0].speed + '</li><li>Truck: ' + index[i].path[0].truck + '</li><li>Departure Airport: ' + index[i].departure_airport + '</li><li>Arrival Time: ' + index[i].arrival_time + '</li><li>Arrival Airport: ' + index[i].arrival_airport + '</li><li>Arrival Time: ' + index[i].arrival_time + '</li></ul>';
+            return div
+          }
+          legend.addTo(map);
           markers_dict[index[i].FlightID].marker.setIcon(airplaneSel);
           markers_dict[index[i].FlightID].status = 'selected';
           markers_dict_selected[index[i].FlightID] = index[i];
@@ -151,7 +175,8 @@ function getPlanes() {
             }
           }
         } else {
-          $('#'+ index[i].FlightID).css('background', 'transparent');
+          map.removeControl(legend);
+          $('#' + index[i].FlightID).css('background', 'transparent');
           crashDel();
           crashes = []
           map.removeLayer(markers_dict_selected[index[i].FlightID].route);
@@ -168,7 +193,13 @@ function getPlanes() {
       const FlightIDLi = $(this).find('b').text();
       if (markers_dict[FlightIDLi].status == 'not selected') {
         $('#' + FlightIDLi).css('background', 'lightgray');
-        markers_dict[FlightIDLi].marker.setIcon(airplaneSel).openPopup();
+        markers_dict[FlightIDLi].marker.setIcon(airplaneSel);
+        legend.onAdd = function () {
+          let div = L.DomUtil.create("div", "legend");
+          div.innerHTML = '<p class="font-weight-bold my-2">Flight ID: ' + markers_dict[FlightIDLi].FlightID + '</p><hr class="my-1"><ul class="list-unstyled small my-2"><li>Airline: ' + markers_dict[FlightIDLi].airline + '</li><li>Altitude: ' + markers_dict[FlightIDLi].path[0].altitude + '</li><li>Speed: ' + markers_dict[FlightIDLi].path[0].speed + '</li><li>Truck: ' + markers_dict[FlightIDLi].path[0].truck + '</li><li>Departure Airport: ' + markers_dict[FlightIDLi].departure_airport + '</li><li>Arrival Time: ' + markers_dict[FlightIDLi].arrival_time + '</li><li>Arrival Airport: ' + markers_dict[FlightIDLi].arrival_airport + '</li><li>Arrival Time: ' + markers_dict[FlightIDLi].arrival_time + '</li></ul>';
+          return div
+        }
+        legend.addTo(map);
         markers_dict[FlightIDLi].status = 'selected';
         markers_dict_selected[FlightIDLi] = markers_dict[FlightIDLi];
         markers_dict_selected[FlightIDLi].route = L.polyline([[markers_dict[FlightIDLi].path[0].latitude, markers_dict[FlightIDLi].path[0].longitude], [markers_dict[FlightIDLi].estimated_flightpath[1].latitude, markers_dict[FlightIDLi].estimated_flightpath[1].longitude]]);
@@ -181,6 +212,7 @@ function getPlanes() {
           }
         }
       } else {
+        map.removeControl(legend);
         $('#' + FlightIDLi).css('background', 'transparent');
         crashDel();
         crashes = []
@@ -193,36 +225,6 @@ function getPlanes() {
         markers_dict[FlightIDLi].marker.setIcon(airplane).closePopup();
       }
     });
-    // $('#collision > a').click(function () {
-    //   const FlightIDa = $(this).parent().text();
-    //   console.log(FlightIDa);
-    //   if (markers_dict[FlightIDa].status == 'not selected') {
-    //     $('#' + FlightIDa).css('background', 'lightgray');
-    //     markers_dict[FlightIDa].marker.setIcon(airplaneSel).openPopup();
-    //     markers_dict[FlightIDa].status = 'selected';
-    //     markers_dict_selected[FlightIDa] = markers_dict[FlightIDLi];
-    //     markers_dict_selected[FlightIDa].route = L.polyline([[markers_dict[FlightIDa].path[0].latitude, markers_dict[FlightIDa].path[0].longitude], [markers_dict[FlightIDa].estimated_flightpath[1].latitude, markers_dict[FlightIDa].estimated_flightpath[1].longitude]]);
-    //     markers_dict_selected[FlightIDa].route.addTo(map);
-    //     polylines.push(markers_dict_selected[FlightIDa].route);
-    //     if (markers_dict[FlightIDa].collision_l.length > 0) {
-    //       for (let k = 0; k < markers_dict[FlightIDa].collision_l.length; k++) {
-    //         markers_dict_selected[FlightIDa].crash = L.circle([markers_dict_selected[FlightIDa].collision_l[k].crash_latitude, markers_dict_selected[FlightIDa].collision_l[k].crash_longitude], { radius: markers_dict_selected[FlightIDa].collision_l[k].crash_radious, weight: 2, color: '#ff333a', fillColor: '#ff333a' }).addTo(map);
-    //         crashes.push(markers_dict_selected[FlightIDa].crash);
-    //       }
-    //     }
-    //   } else {
-    //     $('#' + FlightIDa).css('background', 'transparent');
-    //     crashDel();
-    //     crashes = []
-    //     map.removeLayer(markers_dict_selected[FlightIDa].route);
-    //     map.removeLayer(markers_dict[FlightIDa].route);
-    //     polylines.pop(markers_dict[FlightIDa].route);
-    //     polylines.pop(markers_dict_selected[FlightIDa].route);
-    //     delete markers_dict_selected[FlightIDa];
-    //     markers_dict[FlightIDa].status = 'not selected';
-    //     markers_dict[FlightIDa].marker.setIcon(airplane).closePopup();
-    //   }
-    // });
     searchBar.addEventListener('keyup', (e) => {
       const searchString = e.target.value.toLowerCase();
       let filtered = [];
@@ -254,7 +256,6 @@ function getPlanes() {
   markerDel();
   routeDel();
   crashDel();
-
 }
 getPlanes();
 setInterval(getPlanes, 20000);
