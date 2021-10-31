@@ -278,6 +278,26 @@ def insert_arrival(id, iata, time):
         print(e)
 
 
+def remove_flight(id):
+    """Removes a Flight from the database"""
+    try:
+        connection = connect()
+        with connection.cursor() as cursor:
+            query = 'DELETE FROM Flights WHERE Id = "{}"'.format(id)
+            cursor.execute(query)
+            query = 'DELETE FROM FlightStatus WHERE Id = "{}"'.format(id)
+            cursor.execute(query)
+            query = 'DELETE FROM Departures WHERE Id = "{}"'.format(id)
+            cursor.execute(query)
+            query = 'DELETE FROM Arrivals WHERE Id = "{}"'.format(id)
+            cursor.execute(query)
+            query = 'DELETE FROM Aircrafts WHERE Id = "{}"'.format(id)
+            cursor.execute(query)
+        connection.commit()
+    except Error as e:
+        print(e)
+
+
 #todo: this function is obsolete, it performs the same function as "insert_flightstatus". Remove the calls to this function and replace them with a call to "insert_flightstatus".
 def update_status(flight):
     """Adds a new row to the database's 'FlightStatus' table

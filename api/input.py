@@ -95,6 +95,12 @@ def get_flights():
             print("Last status: {}".format(db_queries.get_status(flight[2])))
             db_queries.update_status(flight)
             print("New status: {}".format(db_queries.get_status(flight[2])))
+        known_flights.pop(known_flights.index(flight))
+    print("---------------------------------------------------------")
+    print("Flights in database and not in radar:")
+    print(known_flights)
+    for flight in known_flights:
+        db_queries.remove_flight(flight)
 
 
 def get_flight_data(flight_id):
