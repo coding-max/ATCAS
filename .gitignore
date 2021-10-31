@@ -1,0 +1,11 @@
+models/engine/__pycache__
+models/__pycache__/
+__pycache__
+test_*
+config.json
+tests/*
+paths/*
+others/*
+map.py
+config.json
+config*
