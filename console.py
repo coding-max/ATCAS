@@ -106,10 +106,10 @@ class ATCAScmd(cmd.Cmd):
 			print("missing ID´s")
 		if len(args) == 2:
 			for obj in Aircraft.plane_list:
-				if str(obj.FlightID)  == str(args[0]):
-					avion1 = obj				
-				if str(obj.FlightID)  == str(args[1]):
-					avion2 = obj
+				if str(obj.FlightID) == str(args[0]):
+					avion1 = obj
+				if str(obj.FlightID) == str(args[1]):
+					avion2 = obj	
 			if avion1 and avion2:
 				collision_list = avion1.collision(avion2)
 			for elem in collision_list:

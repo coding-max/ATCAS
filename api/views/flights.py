@@ -17,7 +17,9 @@ def create_airport():
     """returns information about the current working airport"""
     airport = Airport("MVD").to_dict()
     #airport = Aircraft.plane_list
-    return jsonify(airport)
+    ret = jsonify(airport)
+    ret.headers.add('Access-Control-Allow-Origin', '*')
+    return ret
 
 
 @app_views.route('/flights', methods=['GET'], strict_slashes=False)
