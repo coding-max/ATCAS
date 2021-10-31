@@ -12,7 +12,7 @@ app.secret_key = "super_secret_key"
 app.register_blueprint(app_views)
 app.url_map.strict_slashes = False
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
-cors = CORS(app, resources={"/*": {"origins": "0.0.0.0"}})
+cors = CORS(app)
 
 
 @app.errorhandler(404)
