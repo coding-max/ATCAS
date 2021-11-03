@@ -24,15 +24,6 @@ with open('./config.json', 'r') as config_file:
     longitude = positions['longitude']
 
 
-def run_radar():
-    """ """
-    print("---------------------------------------------------------")
-    get_flights()
-    time.sleep(15)
-    print("")
-    run_radar()
-
-
 def custom_time():
     time = (datetime.now() - timedelta(hours=3))
     time = time.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -95,12 +86,17 @@ def get_flights():
             print("Last status: {}".format(db_queries.get_status(flight[2])))
             db_queries.update_status(flight)
             print("New status: {}".format(db_queries.get_status(flight[2])))
-        known_flights.pop(known_flights.index(flight))
+    known_flights = db_queries.get_flights_ids()
+    for flight in detected_flights:
+        known_flights.pop(known_flights.index(flight[2]))
     print("---------------------------------------------------------")
     print("Flights in database and not in radar:")
     print(known_flights)
     for flight in known_flights:
-        db_queries.remove_flight(flight)
+        if (flight not in ["IB420", "IB969"]):
+            db_queries.remove_flight(flight)
+    print("Flights:")
+    print(db_queries.get_flights_ids())
 
 
 def get_flight_data(flight_id):
@@ -147,4 +143,4 @@ def get_flight_data(flight_id):
 
 
 if __name__ == '__main__':
-    run_radar()
+    get_flights()

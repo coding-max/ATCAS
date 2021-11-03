@@ -4,7 +4,6 @@
 import cmd
 import json
 import models
-import pandas as pd
 from models.aircraft import Aircraft
 from models.airport import Airport
 import math

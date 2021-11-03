@@ -6,13 +6,21 @@ from flask_cors import CORS
 from models import storage
 from api.views import app_views
 from os import getenv
+import json
+
 
 app = Flask(__name__)
-app.secret_key = "super_secret_key"
 app.register_blueprint(app_views)
 app.url_map.strict_slashes = False
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 cors = CORS(app)
+
+
+with open('./config.json', 'r') as config_file:
+    config = dict(json.load(config_file))
+    cert = config['https']['cert']
+    key = config['https']['key']
+    print(cert, key)
 
 
 @app.errorhandler(404)
@@ -28,4 +36,4 @@ if __name__ == "__main__":
     port = getenv("ATCAS_API_PORT")
     if (port is None):
         port = '5000'
-    app.run(host, port, threaded=True)
+    app.run(host, port, threaded=True, ssl_context=(cert, key))

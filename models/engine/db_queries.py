@@ -316,7 +316,7 @@ def update_status(flight):
         print(e)
 
 
-def get_path(flight_id=None):
+def get_path(flight_id):
     try:
         with open("././test_flights/{:}.json".format(flight_id), 'r') as f:
             return dict(json.load(f))

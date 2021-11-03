@@ -10,10 +10,11 @@ import json
 from time import sleep
 
 def feeder():
-    """functon that creates teh new data and feeds it to webapp"""
+    """function that creates teh new data and feeds it to webapp"""
     ret = []
     
     for plane in Airport.airplane_list:
+        print(plane)
         if plane not in Airport.mapped_planes:
             Airport.mapped_planes.append(plane)
             avion = Aircraft(str(plane))
@@ -34,8 +35,6 @@ def feeder():
     with open('./api/views/output.json', 'w') as outfile:
         json.dump(ret, outfile, default=str)
     print("**tick**")
-    sleep(20)
-    feeder()
 
 if __name__ == '__main__':
     feeder()
