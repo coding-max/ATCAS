@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+sudo apt update
+sudo apt install nginx -y
+sudo apt install python3 -y
+sudo apt install python3-pip -y
+sudo pip install PyMySQL
+sudo pip install numpy
+sudo pip install Flask
+sudo pip install -U flask-cors
+sudo pip install gunicorn

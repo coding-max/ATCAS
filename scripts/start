@@ -1,0 +1,13 @@
+#!/bin/bash
+
+function run_app() {
+    python3 api/input.py
+    sleep 5
+    python3 api/output.py
+    sleep 10
+    run_app
+}
+
+export PYTHONPATH=.
+#gunicorn --certfile=cert.pem --keyfile=privkey.pem api.app:app & run_app
+python3 -m api.app & run_app
