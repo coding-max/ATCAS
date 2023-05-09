@@ -1,6 +1,0 @@
-#!/bin/bash
-
-var=$(ps -eaf | grep "python3 -m api.app" | tr -s " " | cut -f2 -d " " | head -n1)
-kill $var
-var=$(ps -eaf | grep "scripts/start" | tr -s " " | cut -f2 -d " " | head -n1)
-kill $var

@@ -1,4 +1,0 @@
-#!/bin/bash
-./test_flights/stop_flights
-var=$(ps -eaf | grep "/usr/bin/python3 ./api/output.py" | tr -s " " | cut -f2 -d " " | head -n1)
-kill $var

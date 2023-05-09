@@ -1,5 +1,0 @@
-#!/bin/bash
-var=$(ps -eaf | grep "/usr/bin/python3 ./test_flights/test_simulated_flight1.py" | tr -s " " | cut -f2 -d " " | head -n1)
-kill $var
-var2=$(ps -eaf | grep "/usr/bin/python3 ./test_flights/test_simulated_flight2.py" | tr -s " " | cut -f2 -d " " | head -n1)
-kill $var2
